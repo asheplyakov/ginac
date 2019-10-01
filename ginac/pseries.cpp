@@ -414,7 +414,7 @@ ex pseries::evalf() const
 	epvector new_seq;
 	new_seq.reserve(seq.size());
 	for (auto & it : seq)
-		new_seq.emplace_back(expair(it.rest, it.coeff));
+		new_seq.emplace_back(expair(it.rest.evalf(), it.coeff));
 
 	return dynallocate<pseries>(relational(var,point), std::move(new_seq)).setflag(status_flags::evaluated);
 }
