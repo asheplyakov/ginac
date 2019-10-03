@@ -394,17 +394,7 @@ ex pseries::collect(const ex &s, bool distributed) const
 /** Perform coefficient-wise automatic term rewriting rules in this class. */
 ex pseries::eval() const
 {
-	if (flags & status_flags::evaluated) {
-		return *this;
-	}
-
-	// Construct a new series with evaluated coefficients
-	epvector new_seq;
-	new_seq.reserve(seq.size());
-	for (auto & it : seq)
-		new_seq.emplace_back(expair(it.rest, it.coeff));
-
-	return dynallocate<pseries>(relational(var,point), std::move(new_seq)).setflag(status_flags::evaluated);
+	return hold();
 }
 
 /** Evaluate coefficients numerically. */
