@@ -3223,7 +3223,6 @@ static ex H_evalf(const ex& x1, const ex& x2)
 			return filter(H(x1, xtemp).hold()).subs(xtemp==x2).evalf();
 		}
 		// ... and expand parameter notation
-		bool has_minus_one = false;
 		lst m;
 		for (const auto & it : morg) {
 			if (it > 1) {
@@ -3236,7 +3235,6 @@ static ex H_evalf(const ex& x1, const ex& x2)
 					m.append(0);
 				}
 				m.append(-1);
-				has_minus_one = true;
 			} else {
 				m.append(it);
 			}
@@ -3297,7 +3295,14 @@ static ex H_evalf(const ex& x1, const ex& x2)
 			}
 			return res.subs(xtemp == numeric(x)).evalf();
 		}
-		
+
+		// check for letters (-1)
+		bool has_minus_one = false;
+		for (const auto & it : m) {
+			if (it == -1)
+				has_minus_one = true;
+		}
+
 		// check transformations for 0.95 <= |x| < 2.0
 		
 		// |(1-x)/(1+x)| < 0.9 -> circular area with center=9.53+0i and radius=9.47
