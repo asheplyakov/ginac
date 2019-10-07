@@ -1,5 +1,9 @@
 This file records noteworthy changes.
 
+1.7.8 (7 October 2019)
+* Fix pseries::evalf(), broken since 1.7.0.
+* Fix a corner-case bug in H_evalf().
+
 1.7.7 (22 September 2019)
 * Fix unarchiving empty containers.
 * Remove obsolete exhashmap implementation.
