@@ -530,7 +530,25 @@ basic & ex::construct_from_ulong(unsigned long i)
 		return dynallocate<numeric>(i);
 	}
 }
-	
+
+basic & ex::construct_from_longlong(long long i)
+{
+	if (i >= -12 && i <= 12) {
+		return construct_from_int(static_cast<int>(i));
+	} else {
+		return dynallocate<numeric>(i);
+	}
+}
+
+basic & ex::construct_from_ulonglong(unsigned long long i)
+{
+	if (i <= 12) {
+		return construct_from_uint(static_cast<unsigned>(i));
+	} else {
+		return dynallocate<numeric>(i);
+	}
+}
+
 basic & ex::construct_from_double(double d)
 {
 	return dynallocate<numeric>(d);

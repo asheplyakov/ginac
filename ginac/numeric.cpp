@@ -141,6 +141,17 @@ numeric::numeric(unsigned long i)
 	setflag(status_flags::evaluated | status_flags::expanded);
 }
 
+numeric::numeric(long long i)
+{
+	value = cln::cl_I(i);
+	setflag(status_flags::evaluated | status_flags::expanded);
+}
+
+numeric::numeric(unsigned long long i)
+{
+	value = cln::cl_I(i);
+	setflag(status_flags::evaluated | status_flags::expanded);
+}
 
 /** Constructor for rational numerics a/b.
  *

@@ -87,6 +87,8 @@ public:
 	ex(unsigned int i);
 	ex(long i);
 	ex(unsigned long i);
+	ex(long long i);
+	ex(unsigned long long i);
 	ex(double const d);
 
 	/** Construct ex from string and a list of symbols. The input grammar is
@@ -236,6 +238,8 @@ private:
 	static basic & construct_from_uint(unsigned int i);
 	static basic & construct_from_long(long i);
 	static basic & construct_from_ulong(unsigned long i);
+	static basic & construct_from_longlong(long long i);
+	static basic & construct_from_ulonglong(unsigned long long i);
 	static basic & construct_from_double(double d);
 	static ptr<basic> construct_from_string_and_lst(const std::string &s, const ex &l);
 	void makewriteable();
@@ -286,6 +290,18 @@ ex::ex(long i) : bp(construct_from_long(i))
 
 inline
 ex::ex(unsigned long i) : bp(construct_from_ulong(i))
+{
+	GINAC_ASSERT(bp->flags & status_flags::dynallocated);
+}
+
+inline
+ex::ex(long long i) : bp(construct_from_longlong(i))
+{
+	GINAC_ASSERT(bp->flags & status_flags::dynallocated);
+}
+
+inline
+ex::ex(unsigned long long i) : bp(construct_from_ulonglong(i))
 {
 	GINAC_ASSERT(bp->flags & status_flags::dynallocated);
 }

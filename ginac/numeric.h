@@ -90,6 +90,8 @@ public:
 	numeric(unsigned int i);
 	numeric(long i);
 	numeric(unsigned long i);
+	numeric(long long i);
+	numeric(unsigned long long i);
 	numeric(long numer, long denom);
 	numeric(double d);
 	numeric(const char *);
