@@ -1,5 +1,3 @@
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../ginac)
-add_definitions(-DIN_GINAC)
 
 set(ginac_tests
 	check_numeric
@@ -70,7 +68,7 @@ macro(add_ginac_test thename)
 		set(${thename}_sources ${thename}.cpp ${${thename}_extra_src})
 	endif()
 	add_executable(${thename} EXCLUDE_FROM_ALL ${${thename}_sources})
-	target_link_libraries(${thename} ginac ${LIBDL_LIBRARIES})
+	target_link_libraries(${thename} ginac::ginac)
 	add_dependencies(test_suite ${thename})
 	add_dependencies(check ${thename})
 	add_test(NAME ${thename} COMMAND $<TARGET_FILE:${thename}>)
@@ -79,6 +77,7 @@ endmacro()
 macro(add_ginac_timing thename)
 	set(${thename}_extra_src timer.cpp randomize_serials.cpp)
 	add_ginac_test(${thename})
+	target_compile_definitions(${thename} PRIVATE HAVE_CONFIG_H)
 endmacro()
 
 set(check_matrices_extra_src genex.cpp)

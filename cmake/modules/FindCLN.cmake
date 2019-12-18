@@ -116,3 +116,26 @@ include(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(CLN REQUIRED_VARS CLN_LIBRARIES CLN_INCLUDE_DIR
 				      VERSION_VAR CLN_VERSION)
 
+if (CLN_FOUND AND NOT TARGET cln::cln)
+	set(_found_shared_libcln FALSE)
+	get_filename_component(_libcln_suffix ${CLN_LIBRARIES} EXT)
+	if (_libcln_suffix STREQUAL ${CMAKE_STATIC_LIBRARY_SUFFIX})
+		# XXX: msvc uses the same suffix for both static and import libraries
+		add_library(cln::cln STATIC IMPORTED)
+	else()
+		set(_found_shared_libcln TRUE)
+		add_library(cln::cln SHARED IMPORTED)
+	endif()
+	set_target_properties(cln::cln PROPERTIES
+		INTERFACE_INCLUDE_DIRECTORIES ${CLN_INCLUDE_DIR}
+	)
+	if (WIN32 AND _found_shared_libcln)
+		set_target_properties(cln::cln PROPERTIES
+			IMPORTED_IMPLIB ${CLN_LIBRARIES}
+		)
+	else()
+		set_target_properties(cln::cln PROPERTIES
+			IMPORTED_LOCATION ${CLN_LIBRARIES}
+		)
+	endif()
+endif()

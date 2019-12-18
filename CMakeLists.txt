@@ -1,15 +1,15 @@
 cmake_minimum_required(VERSION 3.1)
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 
 project(GiNaC)
-file(STRINGS ${CMAKE_SOURCE_DIR}/ginac/version.h _ginac_vinfo REGEX "^#define[\t ]+GINACLIB_.*_VERSION.*")
+file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/ginac/version.h _ginac_vinfo REGEX "^#define[\t ]+GINACLIB_.*_VERSION.*")
 string(REGEX REPLACE "^.*GINACLIB_MAJOR_VERSION[ \t]+([0-9]+).*" "\\1" GINAC_MAJOR_VERSION "${_ginac_vinfo}")
 string(REGEX REPLACE "^.*GINACLIB_MINOR_VERSION[ \t]+([0-9]+).*" "\\1" GINAC_MINOR_VERSION "${_ginac_vinfo}")
 string(REGEX REPLACE "^.*GINACLIB_MICRO_VERSION[ \t]+([0-9]+).*" "\\1" GINAC_MICRO_VERSION "${_ginac_vinfo}")
 set(GINAC_VERSION "${GINAC_MAJOR_VERSION}.${GINAC_MINOR_VERSION}.${GINAC_MICRO_VERSION}")
 
 # Library versioning info
-file(STRINGS ${CMAKE_SOURCE_DIR}/ginac/version.h _ginac_vinfo REGEX "^#define[\t ]+GINAC_LT_.*")
+file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/ginac/version.h _ginac_vinfo REGEX "^#define[\t ]+GINAC_LT_.*")
 string(REGEX REPLACE "^.*GINAC_LT_CURRENT[ \t]+([0-9]+).*" "\\1" ginac_lt_current "${_ginac_vinfo}")
 string(REGEX REPLACE "^.*GINAC_LT_AGE[ \t]+([0-9]+).*" "\\1" ginac_lt_age "${_ginac_vinfo}")
 string(REGEX REPLACE "^.*GINAC_LT_REVISION[ \t]+([0-9]+).*" "\\1" ginac_lt_revision "${_ginac_vinfo}")
@@ -17,70 +17,38 @@ string(REGEX REPLACE "^.*GINAC_LT_REVISION[ \t]+([0-9]+).*" "\\1" ginac_lt_revis
 math(EXPR ginaclib_soversion "${ginac_lt_current} - ${ginac_lt_age}")
 set(ginaclib_version ${ginaclib_soversion}.${ginac_lt_age}.${ginac_lt_revision})
 
+include(GNUInstallDirs)
+
 # make check
 enable_testing()
-add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND})
-add_custom_target(test_suite)
+if (NOT TARGET check)
+	add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND})
+endif()
+if (NOT TARGET test_suite)
+	add_custom_target(test_suite)
+endif()
 if (WIN32)
 	if (NOT DEFINED CMAKE_RUNTIME_OUTPUT_DIRECTORY)
 		set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin)
 	endif()
 endif()
 # make info
-add_custom_target(info ALL)
-add_custom_target(html)
-add_custom_target(pdf)
+if (NOT TARGET info)
+	add_custom_target(info ALL)
+endif()
+if (NOT TARGET html)
+	add_custom_target(html)
+endif()
+if (NOT TARGET pdf)
+	add_custom_target(pdf)
+endif()
 
 set (CMAKE_CXX_STANDARD 11)
 
 find_package(CLN 1.2.2 REQUIRED)
-include_directories(${CLN_INCLUDE_DIR})
 
 include(CheckIncludeFile)
 check_include_file("unistd.h" HAVE_UNISTD_H)
-
-include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR}/ginac)
-
-# This macro implements some very special logic how to deal with the cache.
-# By default the various install locations inherit their value from their
-#"parent" variable, so if you set CMAKE_INSTALL_PREFIX, then
-# EXEC_INSTALL_PREFIX, BIN_INSTALL_DIR, LIB_INSTALL_DIR, etc will calculate
-# their value by appending subdirs to CMAKE_INSTALL_PREFIX.
-# This would work just fine without using the cache.
-# But if somebody wants e.g. a different EXEC_INSTALL_PREFIX this value
-# has to go into the cache, otherwise it will be forgotten on the next cmake
-# run. Once a variable is in the cache, it doesn't depend on its "parent"
-# variables anymore and you can only change it by editing it directly.
-# This macro helps in this regard, because as long as you don't set one
-# of the variables explicitly to some location, the value will be computed
-# from parents of the variable in question. So modifying CMAKE_INSTALL_PREFIX
-# later on will have the desired effect.
-# But once you decide to set e.g. EXEC_INSTALL_PREFIX to some special
-# location this will go into the cache and it will no longer depend on
-# CMAKE_INSTALL_PREFIX.
-
-macro(_set_fancy _var _value _comment)
-	set(predefinedvalue "${_value}")
-	if ("${CMAKE_INSTALL_PREFIX}" STREQUAL "${GINAC_INSTALL_DIR}" AND DEFINED GINAC_${_var})
-		set(predefinedvalue "${GINAC_${_var}}")
-	endif()
-	if (NOT DEFINED ${_var})
-		set(${_var} ${predefinedvalue})
-	else()
-		set(${_var} "${${_var}}" CACHE PATH "${_comment}")
-	endif()
-endmacro(_set_fancy)
-
-_set_fancy(EXEC_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}"
-	   "Base directory for libraries and executables")
-_set_fancy(LIB_INSTALL_DIR "${EXEC_INSTALL_PREFIX}/lib"
-	   "Libraries installation directory")
-_set_fancy(BIN_INSTALL_DIR "${EXEC_INSTALL_PREFIX}/bin"
-	   "Binaries installation directory")
-_set_fancy(SHARE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/share"
-	   "Base directory for architecture independent files")
-_set_fancy(INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/include"
-	   "Headers installation directory")
 
 if (NOT DEFINED BUILD_SHARED_LIBS)
 	if (NOT MSVC)
@@ -105,7 +73,7 @@ set(_wl_rpath "${CMAKE_SHARED_LIBRARY_RUNTIME_C_FLAG}")
 
 # rpath for the pkg-config meta-data.
 set(_ginaclib_rpath "${_wl_rpath}${_ginac_rpath_reloc}")
-list(FIND CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES "${LIB_INSTALL_DIR}" isSystemDir)
+list(FIND CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_FULL_LIBDIR}" isSystemDir)
 if ("${isSystemDir}" STREQUAL "-1")
 	list(APPEND _ginaclib_rpath "${_wl_rpath}\${libdir}")
 endif()
@@ -116,12 +84,12 @@ if (NOT CMAKE_SKIP_RPATH)
 	endif()
 endif()
 
-configure_file(${CMAKE_SOURCE_DIR}/ginac.pc.cmake ${CMAKE_BINARY_DIR}/ginac.pc @ONLY)
-install(FILES ${CMAKE_BINARY_DIR}/ginac.pc DESTINATION "${LIB_INSTALL_DIR}/pkgconfig")
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/ginac.pc.cmake ${CMAKE_CURRENT_BINARY_DIR}/ginac.pc @ONLY)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ginac.pc DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
 
 # rpath for libginac.so itself, ginsh, and friends
 set(_ginac_rpath ${_ginac_rpath_reloc})
-foreach(_d ${CLN_LIBRARY_DIRS} ${LIB_INSTALL_DIR})
+foreach(_d ${CLN_LIBRARY_DIRS} ${CMAKE_INSTALL_FULL_LIBDIR})
 	list(FIND CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES "${_d}" isSystemDir)
 	if ("${isSystemDir}" STREQUAL "-1")
 		list(APPEND _ginac_rpath "${_d}")
@@ -137,16 +105,16 @@ if (NOT DEFINED CMAKE_INSTALL_RPATH)
 	set(CMAKE_INSTALL_RPATH ${ginac_rpath})
 endif()
 if (APPLE AND NOT DEFINED CMAKE_INSTALL_NAME_DIR)
-	set(CMAKE_INSTALL_NAME_DIR ${LIB_INSTALL_DIR})
+	set(CMAKE_INSTALL_NAME_DIR ${CMAKE_INSTALL_FULL_LIBDIR})
 endif()
 
-list(FIND CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES "${LIB_INSTALL_DIR}" isSystemDir)
+list(FIND CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_FULL_LIBDIR}" isSystemDir)
 if ("${isSystemDir}" STREQUAL "-1")
 	string(REPLACE ":" ";" _install_rpath "${CMAKE_INSTALL_RPATH}")
-	list(FIND _install_rpath "${LIB_INSTALL_DIR}" _is_rpath_consistent)
+	list(FIND _install_rpath "${CMAKE_INSTALL_FULL_LIBDIR}" _is_rpath_consistent)
 	if ("${_is_rpath_consistent}" STREQUAL "-1")
 		message(WARNING "the libginac.so library will be installed into "
-				"a non-standard directory (${LIB_INSTALL_DIR}), "
+			"a non-standard directory (${CMAKE_INSTALL_FULL_LIBDIR}), "
 				"however, the rpath (${_install_rpath}) "
 				"does not contain that directory. Most likely "
 				"things won't work without extra configuration "
@@ -154,6 +122,23 @@ if ("${isSystemDir}" STREQUAL "-1")
 	endif()
 endif()
 
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+	${CMAKE_CURRENT_BINARY_DIR}/ginac-config-version.cmake
+	VERSION ${GINAC_VERSION}
+	COMPATIBILITY AnyNewerVersion
+)
+
+configure_package_config_file(${CMAKE_CURRENT_LIST_DIR}/cmake/ginac-config.cmake.in
+	${CMAKE_CURRENT_BINARY_DIR}/ginac-config.cmake
+	INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ginac
+)
+
+install(FILES
+	${CMAKE_CURRENT_BINARY_DIR}/ginac-config.cmake
+	${CMAKE_CURRENT_BINARY_DIR}/ginac-config-version.cmake
+	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ginac
+)
 
 include(FindFLEX)
 include(FindBISON)
@@ -183,7 +168,6 @@ endif()
 
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
-add_definitions(-DHAVE_CONFIG_H)
 
 if (NOT LIBEXECDIR)
 	set (LIBEXECDIR "${CMAKE_INSTALL_PREFIX}/libexec")

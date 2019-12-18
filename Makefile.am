@@ -11,6 +11,7 @@ CMAKE_FILES = CMakeLists.txt \
 	      ginac.pc.cmake \
 	      config.cmake.in \
 	      INSTALL.CMake \
+	      cmake/ginac-config.cmake.in \
 	      cmake/modules/FindCLN.cmake \
 	      cmake/modules/FindReadline.cmake \
 	      cmake/modules/FindGiNaC.cmake \

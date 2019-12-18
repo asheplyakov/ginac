@@ -1,9 +1,3 @@
-include_directories(
-	${CMAKE_CURRENT_SOURCE_DIR}/../ginac
-	${CMAKE_CURRENT_BINARY_DIR}/../ginac
-	${CMAKE_CURRENT_SOURCE_DIR}
-	${CMAKE_CURRENT_BINARY_DIR})
-add_definitions(-DIN_GINAC)
 
 bison_target(ginsh_parser
              ginsh_parser.ypp
@@ -34,8 +28,9 @@ set(ginsh_DISTRIB
     ginsh_fcn_help.py
     ginsh_op_help.py
 )
+set(ginsh_include_directories ${CMAKE_CURRENT_BINARY_DIR}/.. ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
 if (READLINE_FOUND)
-	include_directories(${READLINE_INCLUDE_DIRS})
+	set(ginsh_include_directories ${ginsh_include_directories} ${READLINE_INCLUDE_DIRS})
 endif()
 
 add_custom_command(
@@ -61,5 +56,7 @@ if (READLINE_FOUND)
 endif()
 
 add_executable(ginsh ${ginsh_SOURCES} ${ginsh_HEADERS})
-target_link_libraries(ginsh ginac ${ginsh_extra_libs} ${LIBDL_LIBRARIES})
-install(TARGETS ginsh RUNTIME DESTINATION "${BIN_INSTALL_DIR}")
+target_link_libraries(ginsh ginac::ginac ${ginsh_extra_libs})
+target_include_directories(ginsh PRIVATE ${ginsh_include_directories})
+target_compile_definitions(ginsh PRIVATE HAVE_CONFIG_H)
+install(TARGETS ginsh RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}")

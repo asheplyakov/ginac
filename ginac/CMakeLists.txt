@@ -1,4 +1,3 @@
-cmake_minimum_required(VERSION 2.6)
 
 set(ginaclib_sources
     add.cpp
@@ -147,12 +146,21 @@ set(ginaclib_private_headers
 )
 
 add_library(ginac ${ginaclib_sources})
-add_definitions(-DLIBEXECDIR="${LIBEXECDIR}/")
+add_library(ginac::ginac ALIAS ginac)
 set_target_properties(ginac PROPERTIES
 	SOVERSION ${ginaclib_soversion}
 	VERSION ${ginaclib_version})
-target_link_libraries(ginac ${CLN_LIBRARIES})
-include_directories(${CMAKE_SOURCE_DIR}/ginac)
+target_compile_definitions(ginac
+	PUBLIC $<BUILD_INTERFACE:IN_GINAC>
+	PRIVATE -DLIBEXECDIR="${LIBEXECDIR}/" HAVE_CONFIG_H
+)
+target_link_libraries(ginac PUBLIC cln::cln ${LIBDL_LIBRARIES})
+target_include_directories(ginac PUBLIC
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/..>
+	$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
 
 if (WIN32 AND CMAKE_COMPILER_IS_GNUCXX AND BUILD_SHARED_LIBS)
 	set_target_properties(ginac PROPERTIES
@@ -167,10 +175,18 @@ if (NOT BUILD_SHARED_LIBS)
 	set_target_properties(ginac PROPERTIES PREFIX "lib")
 endif()
 
-install(TARGETS ginac LIBRARY DESTINATION "${LIB_INSTALL_DIR}"
-		      RUNTIME DESTINATION "${BIN_INSTALL_DIR}"
-		      ARCHIVE DESTINATION "${LIB_INSTALL_DIR}")
-install(FILES ${ginaclib_public_headers} DESTINATION "${INCLUDE_INSTALL_DIR}/ginac")
+install(TARGETS ginac
+		      EXPORT ginac-exports
+	              LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+		      RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+		      ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+)
+install(FILES ${ginaclib_public_headers} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/ginac")
+install(EXPORT ginac-exports
+	FILE ginac-targets.cmake
+	NAMESPACE ginac::
+	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ginac
+)
 
 add_custom_command(
 	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/function.h
