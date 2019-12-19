@@ -45,7 +45,14 @@ endif()
 
 set (CMAKE_CXX_STANDARD 11)
 
-find_package(CLN 1.2.2 REQUIRED)
+if (NOT DEFINED CLN_SOURCE_DIR)
+	set(CLN_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cln)
+endif()
+if (EXISTS ${CLN_SOURCE_DIR}/CMakeLists.txt)
+	add_subdirectory(${CLN_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}/cln)
+else()
+	find_package(CLN 1.2.2 REQUIRED)
+endif()
 
 include(CheckIncludeFile)
 check_include_file("unistd.h" HAVE_UNISTD_H)
