@@ -20,6 +20,11 @@ set(ginaclib_version ${ginaclib_soversion}.${ginac_lt_age}.${ginac_lt_revision})
 # make check
 enable_testing()
 add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND})
+if (WIN32)
+	if (NOT DEFINED CMAKE_RUNTIME_OUTPUT_DIRECTORY)
+		set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin)
+	endif()
+endif()
 # make info
 add_custom_target(info ALL)
 add_custom_target(html)
