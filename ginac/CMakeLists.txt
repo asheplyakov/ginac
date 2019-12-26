@@ -154,6 +154,12 @@ set_target_properties(ginac PROPERTIES
 target_link_libraries(ginac ${CLN_LIBRARIES})
 include_directories(${CMAKE_SOURCE_DIR}/ginac)
 
+if (WIN32 AND CMAKE_COMPILER_IS_GNUCXX AND BUILD_SHARED_LIBS)
+	set_target_properties(ginac PROPERTIES
+		LINK_FLAGS "-Wl,--enable-auto-import -Wl,--export-all-symbols"
+	)
+endif()
+
 if (NOT BUILD_SHARED_LIBS)
 	set_target_properties(ginac PROPERTIES OUTPUT_NAME "ginac")
 	# Avoid the static library vs import library conflict (necessary for
