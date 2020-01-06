@@ -1,5 +1,9 @@
 #include <iostream>
+#ifdef IN_GINAC
+#include "ginac.h"
+#else
 #include <ginac/ginac.h>
+#endif
 // Yes, we are using CUBA (should be installed on the system!)
 #include <cuba.h>
 

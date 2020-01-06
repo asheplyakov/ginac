@@ -1,7 +1,10 @@
 #include <ctime>
 #include <iostream>
+#ifdef IN_GINAC
+#include "ginac.h"
+#else
 #include <ginac/ginac.h>
-
+#endif
 using namespace std;
 using namespace GiNaC;
 
