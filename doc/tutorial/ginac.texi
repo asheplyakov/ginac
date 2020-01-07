@@ -48,7 +48,7 @@ notice identical to this one.
 @title GiNaC @value{VERSION}
 @subtitle An open framework for symbolic computation within the C++ programming language
 @subtitle @value{UPDATED}
-@author @uref{http://www.ginac.de}
+@author @uref{https://www.ginac.de}
 
 @page
 @vskip 0pt plus 1filll
@@ -126,7 +126,7 @@ hand-made documentation like this one is difficult to keep in sync with
 the development, the actual documentation is inside the sources in the
 form of comments.  That documentation may be parsed by one of the many
 Javadoc-like documentation systems.  If you fail at generating it you
-may access it from @uref{http://www.ginac.de/reference/, the GiNaC home
+may access it from @uref{https://www.ginac.de/reference/, the GiNaC home
 page}.  It is an invaluable resource not only for the advanced user who
 wishes to extend the system (or chase bugs) but for everybody who wants
 to comprehend the inner workings of GiNaC.  This little tutorial on the
@@ -484,7 +484,7 @@ required for the configuration, it can be downloaded from
 @uref{http://pkg-config.freedesktop.org}.
 Last but not least, the CLN library
 is used extensively and needs to be installed on your system.
-Please get it from @uref{http://www.ginac.de/CLN/} (it is licensed under
+Please get it from @uref{https://www.ginac.de/CLN/} (it is licensed under
 the GPL) and install it prior to trying to install GiNaC.  The configure
 script checks if it can find it and if it cannot, it will refuse to
 continue.

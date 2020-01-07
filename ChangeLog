@@ -4,4 +4,4 @@ logged.  This is how to get anonymous read-only access:
 $ git clone git://www.ginac.de/ginac.git ginac
 $ cd ginac; git whatchanged
 Alternatively you can browse the repository on-line at
-http://www.ginac.de/ginac.git
+https://www.ginac.de/ginac.git

@@ -477,7 +477,7 @@ static inline bool coerce(T1& dst, const T2& arg);
 /** 
  * @brief Check if CLN integer can be converted into int
  *
- * @sa http://www.ginac.de/pipermail/cln-list/2006-October/000248.html
+ * @sa https://www.ginac.de/pipermail/cln-list/2006-October/000248.html
  */
 template<>
 inline bool coerce<int, cln::cl_I>(int& dst, const cln::cl_I& arg)

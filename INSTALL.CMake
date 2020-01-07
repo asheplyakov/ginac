@@ -2,7 +2,7 @@ PREREQUISITES
 =============
 
 1. A decent ISO C++-11 compiler. GCC (version >= 4.9) is recommended.
-2. CLN library (http://www.ginac.de/CLN), version >= 1.2.2
+2. CLN library (https://www.ginac.de/CLN), version >= 1.2.2
 3. CMake, version >= 2.8 (version 2.6.x might work too).
 4. Python 3
 5. (optional) pkg-config utility (http://pkg-config.freedesktop.org)

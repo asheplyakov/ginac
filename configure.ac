@@ -11,7 +11,7 @@ m4_define([ginac_lt_current], GINAC_GET_LTVERSION([CURRENT]))
 m4_define([ginac_lt_age], GINAC_GET_LTVERSION([AGE]))
 m4_define([ginac_lt_revision], GINAC_GET_LTVERSION([REVISION]))
 
-AC_INIT([GiNaC], ginac_version, [ginac-list@ginac.de], [ginac], [http://www.ginac.de/])
+AC_INIT([GiNaC], ginac_version, [ginac-list@ginac.de], [ginac], [https://www.ginac.de/])
 AC_PREREQ(2.59)
 AC_CONFIG_SRCDIR(ginac/basic.cpp)
 AC_CONFIG_AUX_DIR([config])

@@ -1,7 +1,7 @@
 /** @file match_bug.cpp
  *
  *  Check for bug in GiNaC::ex::match() described here:
- *  http://www.ginac.de/pipermail/ginac-devel/2006-April/000942.html */
+ *  https://www.ginac.de/pipermail/ginac-devel/2006-April/000942.html */
 
 /*
  *  GiNaC Copyright (C) 1999-2020 Johannes Gutenberg University Mainz, Germany
@@ -32,7 +32,7 @@ using namespace GiNaC;
  * could be modified even if the match failed! Although this "feature"
  * was documented it happened to be very confusing *even for GiNaC
  * developers*, see 
- * http://www.ginac.de/pipermail/ginac-devel/2006-April/000942.html
+ * https://www.ginac.de/pipermail/ginac-devel/2006-April/000942.html
  *
  * It was fixed in 192ed7390b7b2b705ad100e3db0a92eedd2b20ad. Let's make
  * sure it will be never re-added:

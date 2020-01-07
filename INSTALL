@@ -2,7 +2,7 @@ PREREQUISITES
 =============
 
 GiNaC requires the CLN library by Bruno Haible installed on your system.
-It is available from <http://www.ginac.de/CLN/>.
+It is available from <https://www.ginac.de/CLN/>.
 
 You will also need a decent ISO C++-11 compiler. We recommend the C++
 compiler from the GNU compiler collection, GCC >= 4.8. If you have a
@@ -87,7 +87,7 @@ First, download the code:
 Secondly, make sure all required software is installed. This is *really*
 important step. If some package is missing, the `configure' script might
 be misgenerated, see e.g. this discussion:
-<http://www.ginac.de/pipermail/ginac-list/2007-November/001263.html>
+<https://www.ginac.de/pipermail/ginac-list/2007-November/001263.html>
 
 Finally, run
 
