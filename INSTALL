@@ -19,8 +19,8 @@ TeX are necessary.
 
 Known to work with:
  - Linux on x86 and x86_64 using
-   - GCC 4.8, 4.9, 5.1, 5.2, 5.3, and 6.1
-   - Clang 3.5, 3.6, 3.7, 3.8
+   - GCC 4.8, 4.9, 5.x, 6.x, 7.x, 8.x, and 9.x
+   - Clang 3.5, 3.6, 3.7, 3.8, 6.x, 7.x, 8.x, and 9.x
 
 Known not to work with:
  - Clang 2.7 and earlier due to poor C++ support.
