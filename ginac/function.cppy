@@ -259,18 +259,20 @@ function::function(unsigned ser, exvector && v)
 void function::read_archive(const archive_node& n, lst& sym_lst)
 {
 	inherited::read_archive(n, sym_lst);
-	// Find serial number by function name
+	// Find serial number by function name and number of parameters
+	unsigned np = seq.size();
 	std::string s;
 	if (n.find_string("name", s)) {
 		unsigned int ser = 0;
 		for (auto & it : registered_functions()) {
-			if (s == it.name) {
+			if (s == it.name && np == registered_functions()[ser].nparams) {
 				serial = ser;
 				return;
 			}
 			++ser;
 		}
-		throw (std::runtime_error("unknown function '" + s + "' in archive"));
+		throw (std::runtime_error("unknown function '" + s +
+		                          "' with " + std::to_string(np) + " parameters in archive"));
 	} else
 		throw (std::runtime_error("unnamed function in archive"));
 }
