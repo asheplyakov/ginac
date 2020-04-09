@@ -14,7 +14,7 @@ class mystring : public basic
 	GINAC_DECLARE_REGISTERED_CLASS(mystring, basic)
 public:
 	mystring(const string &s);
-	ex eval(int level) const override;
+	ex eval() const override;
 private:
 	string str;
 
@@ -54,7 +54,7 @@ void mystring::do_print(const print_context &c, unsigned level) const
  * evaluation: all strings automatically converted to lowercase with
  * non-alphabetic characters stripped, and empty strings removed
  */
-ex mystring::eval(int level) const
+ex mystring::eval() const
 {
 	string new_str;
 	for (size_t i=0; i<str.length(); i++) {

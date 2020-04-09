@@ -32,8 +32,7 @@ int main()
 	ifstream in("foobar.gar");
 	in >> a2;
 
-	lst syms;
-	syms = x, y;
+	lst syms = {x, y};
 
 	ex ex1 = a2.unarchive_ex(syms, "foo");
 	ex ex2 = a2.unarchive_ex(syms, "the second one");

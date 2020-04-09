@@ -48,6 +48,7 @@
  * MA  02110-1301 USA
  */
 
+#include <getopt.h>
 #include <vector>
 #include <cstddef> // for size_t
 #include <iostream>
