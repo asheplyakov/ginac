@@ -4066,7 +4066,8 @@ static ex zeta2_evalf(const ex& x, const ex& s)
 		return numeric(zeta_do_Hoelder_convolution(xi, si));
 	}
 
-	return zeta(x, s).hold();
+	// x and s are not lists: convert to lists
+	return zeta(lst{x}, lst{s}).evalf();
 }
 
 
