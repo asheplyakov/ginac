@@ -372,8 +372,8 @@ lambda^2-3*lambda+11
 @end example
 
 Multivariate polynomials and rational functions may be expanded,
-collected and normalized (i.e. converted to a ratio of two coprime 
-polynomials):
+collected, factorized, and normalized (i.e. converted to a ratio of
+two coprime polynomials):
 
 @example
 > a = x^4 + 2*x^2*y^2 + 4*x^3*y + 12*x*y^3 - 3*y^4;
@@ -382,6 +382,8 @@ polynomials):
 4*x*y-y^2+x^2
 > expand(a*b);
 8*x^5*y+17*x^4*y^2+43*x^2*y^4-24*x*y^5+16*x^3*y^3+3*y^6+x^6
+> factor(%);
+(4*x*y+x^2-y^2)^2*(x^2+3*y^2)
 > collect(a+b,x);
 4*x^3*y-y^2-3*y^4+(12*y^3+4*y)*x+x^4+x^2*(1+2*y^2)
 > collect(a+b,y);
@@ -389,6 +391,9 @@ polynomials):
 > normal(a/b);
 3*y^2+x^2
 @end example
+
+Here we have made use of the @command{ginsh}-command @code{%} to pop the
+previously evaluated element from @command{ginsh}'s internal stack.
 
 You can differentiate functions and expand them as Taylor or Laurent
 series in a very natural syntax (the second argument of @code{series} is
@@ -413,9 +418,6 @@ x^(-1)-0.5772156649015328606+(0.9890559953279725555)*x
 -(x-1/2*Pi)^(-2)+(-1/12*Pi^2-1/2*Euler^2-1/240)*(x-1/2*Pi)^2
 -Euler-1/12+Order((x-1/2*Pi)^3)
 @end example
-
-Here we have made use of the @command{ginsh}-command @code{%} to pop the
-previously evaluated element from @command{ginsh}'s internal stack.
 
 Often, functions don't have roots in closed form.  Nevertheless, it's
 quite easy to compute a solution numerically, to arbitrary precision:
@@ -5980,7 +5982,7 @@ calls of several @code{expand()} methods with desired flags.
 The multiple polylogarithm is the most generic member of a family of functions,
 to which others like the harmonic polylogarithm, Nielsen's generalized
 polylogarithm and the multiple zeta value belong.
-Everyone of these functions can also be written as a multiple polylogarithm with specific
+Each of these functions can also be written as a multiple polylogarithm with specific
 parameters. This whole family of functions is therefore often referred to simply as
 multiple polylogarithms, containing @code{Li}, @code{G}, @code{H}, @code{S} and @code{zeta}.
 The multiple polylogarithm itself comes in two variants: @code{Li} and @code{G}. While
