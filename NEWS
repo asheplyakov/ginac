@@ -1,5 +1,9 @@
 This file records noteworthy changes.
 
+1.7.9 (11 April 2020)
+* Fix unarchiving of overloaded functions.
+* Fix MinGW64 build.
+
 1.7.8 (7 October 2019)
 * Fix pseries::evalf(), broken since 1.7.0.
 * Fix a corner-case bug in H_evalf().
