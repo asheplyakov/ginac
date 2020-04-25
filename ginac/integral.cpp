@@ -40,6 +40,7 @@ namespace GiNaC {
 
 GINAC_IMPLEMENT_REGISTERED_CLASS_OPT(integral, basic,
   print_func<print_dflt>(&integral::do_print).
+  print_func<print_python>(&integral::do_print).
   print_func<print_latex>(&integral::do_print_latex))
 
 
