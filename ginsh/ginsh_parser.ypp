@@ -45,6 +45,9 @@
 
 #include "ginsh.h"
 
+using namespace std;
+using namespace GiNaC;
+
 #define YYERROR_VERBOSE 1
 
 #ifdef HAVE_LIBREADLINE

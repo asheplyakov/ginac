@@ -6696,8 +6696,8 @@ expression a unique name:
 
 @example
 #include <fstream>
-using namespace std;
 #include <ginac/ginac.h>
+using namespace std;
 using namespace GiNaC;
 
 int main()
@@ -7613,9 +7613,8 @@ product in a C++ @code{struct}:
 
 @example
 #include <iostream>
-using namespace std;
-
 #include <ginac/ginac.h>
+using namespace std;
 using namespace GiNaC;
 
 struct sprod_s @{
@@ -8007,9 +8006,8 @@ as follows:
 #include <iostream>
 #include <string>   
 #include <stdexcept>
-using namespace std;
-
 #include <ginac/ginac.h>
+using namespace std;
 using namespace GiNaC;
 @end example
 

@@ -1,9 +1,10 @@
 #include <iostream>
-using namespace std;
 #include <ginac/ginac.h>
-using namespace GiNaC;
 // Yes, we are using CUBA (should be installed on the system!)
 #include <cuba.h>
+
+using namespace std;
+using namespace GiNaC;
 
 /*
  * Demonstrates the use of compile_ex with the CUBA library.

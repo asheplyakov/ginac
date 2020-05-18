@@ -29,8 +29,6 @@
 #include <iostream>
 #include <string>
 
-using namespace std;
-
 #ifdef HAVE_READLINE_READLINE_H
 extern "C" {
 #include <readline/readline.h>
@@ -49,10 +47,8 @@ extern "C" {
 #include <ginac/ginac.h>
 #endif
 
-using namespace GiNaC;
-
 // yacc stack type
-#define YYSTYPE ex
+#define YYSTYPE GiNaC::ex
 
 // lex functions/variables
 extern int yyerror(const char *s);
@@ -65,7 +61,7 @@ extern int num_files;
 extern char **file_list;
 
 // Table of all used symbols
-typedef map<string, ex> sym_tab;
+typedef std::map<std::string, GiNaC::ex> sym_tab;
 extern sym_tab syms;
 
 // Type of symbols to generate (real or complex)

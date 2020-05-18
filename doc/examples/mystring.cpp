@@ -4,9 +4,10 @@
 #include <iostream>
 #include <string>   
 #include <stdexcept>
-using namespace std;
 
 #include <ginac/ginac.h>
+
+using namespace std;
 using namespace GiNaC;
 
 class mystring : public basic

@@ -38,6 +38,9 @@
 #include "ginsh.h"
 #include "ginsh_parser.hpp"
 
+using namespace std;
+using namespace GiNaC;
+
 #define YY_INPUT(buf, result, max_size) (result = ginsh_input(buf, max_size))
 
 // Table of all used symbols
