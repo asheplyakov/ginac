@@ -321,6 +321,8 @@ static ex abs_expand(const ex & arg, unsigned options)
 static ex abs_expl_derivative(const ex & arg, const symbol & s)
 {
 	ex diff_arg = arg.diff(s);
+	if (arg.info(info_flags::real))
+		return diff_arg*(2*step(arg) - 1);
 	return (diff_arg*arg.conjugate()+arg*diff_arg.conjugate())/2/abs(arg);
 }
 
