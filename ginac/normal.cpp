@@ -2565,7 +2565,7 @@ static ex find_common_factor(const ex & e, ex & factor, exmap & repl)
 				x *= f;
 			}
 
-			if (i == 0)
+			if (gc.is_zero())
 				gc = x;
 			else
 				gc = gcd(gc, x);
@@ -2575,6 +2575,9 @@ static ex find_common_factor(const ex & e, ex & factor, exmap & repl)
 
 		if (gc.is_equal(_ex1))
 			return e;
+
+		if (gc.is_zero())
+			return _ex0;
 
 		// The GCD is the factor we pull out
 		factor *= gc;
