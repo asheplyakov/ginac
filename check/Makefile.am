@@ -16,6 +16,7 @@ EXAMS = exam_paranoia \
 	exam_inifcns_nstdsums \
 	exam_differentiation  \
 	exam_polygcd  \
+	exam_collect_common_factors \
 	exam_normalization  \
 	exam_factor \
 	exam_pseries  \
@@ -113,6 +114,9 @@ exam_differentiation_LDADD = ../ginac/libginac.la
 
 exam_polygcd_SOURCES = exam_polygcd.cpp
 exam_polygcd_LDADD = ../ginac/libginac.la
+
+exam_collect_common_factors_SOURCES = exam_collect_common_factors.cpp
+exam_collect_common_factors_LDADD = ../ginac/libginac.la
 
 exam_normalization_SOURCES = exam_normalization.cpp
 exam_normalization_LDADD = ../ginac/libginac.la

@@ -19,6 +19,7 @@ set(ginac_tests
 	exam_inifcns_nstdsums
 	exam_differentiation
 	exam_polygcd
+	exam_collect_common_factors
 	exam_normalization
 	exam_factor
 	exam_pseries
