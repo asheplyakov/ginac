@@ -1,5 +1,9 @@
 This file records noteworthy changes.
 
+1.7.10 (28 June 2020)
+* Fix collect_common_factors() for hidden zero arguments.
+* Fix build on modern systems (C++20 and Python3).
+
 1.7.9 (11 April 2020)
 * Fix unarchiving of overloaded functions.
 * Fix MinGW64 build.
