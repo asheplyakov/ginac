@@ -1936,14 +1936,18 @@ ex sqrfree_parfrac(const ex & a, const symbol & x)
 	// Find numerator and denominator
 	ex nd = numer_denom(a);
 	ex numer = nd.op(0), denom = nd.op(1);
-//clog << "numer = " << numer << ", denom = " << denom << endl;
+//std::clog << "numer = " << numer << ", denom = " << denom << std::endl;
 
 	// Convert N(x)/D(x) -> Q(x) + R(x)/D(x), so degree(R) < degree(D)
 	ex red_poly = quo(numer, denom, x), red_numer = rem(numer, denom, x).expand();
-//clog << "red_poly = " << red_poly << ", red_numer = " << red_numer << endl;
+//std::clog << "red_poly = " << red_poly << ", red_numer = " << red_numer << std::endl;
 
 	// Factorize denominator and compute cofactors
 	epvector yun = sqrfree_yun(denom, x);
+	// Yun's algorithm does not account for constant factors.  (For univariate
+	// polynomials it works only in the monic case.)  We can correct this by
+	// inserting what has been lost back into the result.
+	ex lead_coeff  = quo(denom, mul(yun), x);
 	size_t yun_max_exponent = yun.empty() ? 0 : ex_to<numeric>(yun.back().coeff).to_int();
 	exvector factor, cofac;
 	for (size_t i=0; i<yun.size(); i++) {
@@ -1961,8 +1965,8 @@ ex sqrfree_parfrac(const ex & a, const symbol & x)
 		}
 	}
 	size_t num_factors = factor.size();
-//clog << "factors  : " << exprseq(factor) << endl;
-//clog << "cofactors: " << exprseq(cofac) << endl;
+//std::clog << "factors  : " << exprseq(factor) << std::endl;
+//std::clog << "cofactors: " << exprseq(cofac) << std::endl;
 
 	// Construct coefficient matrix for decomposition
 	int max_denom_deg = denom.degree(x);
@@ -1973,8 +1977,8 @@ ex sqrfree_parfrac(const ex & a, const symbol & x)
 			sys(i, j) = cofac[j].coeff(x, i);
 		rhs(i, 0) = red_numer.coeff(x, i);
 	}
-//clog << "coeffs: " << sys << endl;
-//clog << "rhs   : " << rhs << endl;
+//std::clog << "coeffs: " << sys << std::endl;
+//std::clog << "rhs   : " << rhs << std::endl;
 
 	// Solve resulting linear system
 	matrix vars(num_factors, 1);
@@ -1985,7 +1989,7 @@ ex sqrfree_parfrac(const ex & a, const symbol & x)
 	// Sum up decomposed fractions
 	ex sum = 0;
 	for (size_t i=0; i<num_factors; i++)
-		sum += sol(i, 0) / factor[i];
+		sum += sol(i, 0) / factor[i] / lead_coeff;
 
 	return red_poly + sum;
 }

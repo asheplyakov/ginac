@@ -636,6 +636,21 @@ unsigned exam_paranoia25()
 	return 0;
 }
 
+// Bug in partial fraction expansion
+unsigned exam_paranoia26()
+{
+	symbol x("x");
+	ex ex1=pow(x,4)/(x-1)/4;
+	ex ex2=sqrfree_parfrac(ex1,x);
+	ex e = (ex1-ex2).normal();
+
+	if (! e.is_zero()) {
+		clog << "partial fraction expansion of " << ex1 << " produces error.\n";
+		return 1;
+	}
+	return 0;
+}
+
 unsigned exam_paranoia()
 {
 	unsigned result = 0;
@@ -668,6 +683,7 @@ unsigned exam_paranoia()
 	result += exam_paranoia23();  cout << '.' << flush;
 	result += exam_paranoia24();  cout << '.' << flush;
 	result += exam_paranoia25();  cout << '.' << flush;
+	result += exam_paranoia26();  cout << '.' << flush;
 	
 	return result;
 }
