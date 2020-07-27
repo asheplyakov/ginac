@@ -809,9 +809,10 @@ ex power::expand(unsigned options) const
 		ex coeff=(possign? _ex1 : _ex_1);
 		if (m.overall_coeff.info(info_flags::positive) && m.overall_coeff != _ex1)
 			prodseq.push_back(pow(m.overall_coeff, exponent));
-		else if (m.overall_coeff.info(info_flags::negative) && m.overall_coeff != _ex_1)
+		else if (m.overall_coeff.info(info_flags::negative) && m.overall_coeff != _ex_1) {
 			prodseq.push_back(pow(-m.overall_coeff, exponent));
-		else
+			coeff = -coeff;
+		} else
 			coeff *= m.overall_coeff;
 
 		// If positive/negative factors are found, then extract them.

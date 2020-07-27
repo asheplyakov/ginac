@@ -651,6 +651,28 @@ unsigned exam_paranoia26()
 	return 0;
 }
 
+// Bug in power expansion
+unsigned exam_paranoia27()
+{
+	unsigned result = 0;
+	symbol x("x"), y("y"), a("a");
+	possymbol s("s"), t("t");
+	exmap pwrs =
+	  { {pow((x+1)*(y-2)*(s-3)*(t+4), a), pow((x+1)*(y-2)*(s-3), a)*pow(t+4, a)},
+	    {pow(2*(x+1)*(y-2)*(s-3)*(t+4), a), pow(2,a)*pow((x+1)*(y-2)*(s-3), a)*pow(t+4, a)},
+	    {pow(-(x+1)*(y-2)*(s-3)*(t+4), a), pow(-(x+1)*(y-2)*(s-3), a)*pow(t+4, a)},
+	    {pow(-2*(x+1)*(y-2)*(s-3)*(t+4), a), pow(2,a)*pow(-(x+1)*(y-2)*(s-3), a)*pow(t+4, a)} };
+
+	for (auto e : pwrs) {
+		if (! (e.first.expand()).is_equal(e.second) ) {
+			clog << "power expansion of " << e.first << " produces error.\n";
+			++result;
+		}
+	}
+
+	return result;
+}
+
 unsigned exam_paranoia()
 {
 	unsigned result = 0;
@@ -684,6 +706,7 @@ unsigned exam_paranoia()
 	result += exam_paranoia24();  cout << '.' << flush;
 	result += exam_paranoia25();  cout << '.' << flush;
 	result += exam_paranoia26();  cout << '.' << flush;
+	result += exam_paranoia27();  cout << '.' << flush;
 	
 	return result;
 }
