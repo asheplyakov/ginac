@@ -2229,14 +2229,13 @@ static ex factor_sqrfree(const ex& poly);
  */
 static ex factor_multivariate(const ex& poly, const exset& syms)
 {
-	exset::const_iterator s;
 	const ex& x = *syms.begin();
 
 	// make polynomial primitive
 	ex unit, cont, pp;
 	poly.unitcontprim(x, unit, cont, pp);
 	if ( !is_a<numeric>(cont) ) {
-		return factor_sqrfree(cont) * factor_sqrfree(pp);
+		return unit * factor_sqrfree(cont) * factor_sqrfree(pp);
 	}
 
 	// factor leading coefficient
@@ -2309,7 +2308,7 @@ static ex factor_multivariate(const ex& poly, const exset& syms)
 			vector<numeric> ftilde(vnlst.nops()-1);
 			for ( size_t i=0; i<ftilde.size(); ++i ) {
 				ex ft = vnlst.op(i+1);
-				s = syms.begin();
+				auto s = syms.begin();
 				++s;
 				for ( size_t j=0; j<a.size(); ++j ) {
 					ft = ft.subs(*s == a[j]);
@@ -2383,7 +2382,7 @@ static ex factor_multivariate(const ex& poly, const exset& syms)
 		// set up evaluation points
 		EvalPoint ep;
 		vector<EvalPoint> epv;
-		s = syms.begin();
+		auto s = syms.begin();
 		++s;
 		for ( size_t i=0; i<a.size(); ++i ) {
 			ep.x = *s++;
