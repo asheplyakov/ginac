@@ -29,9 +29,7 @@ EXAMS = exam_paranoia \
 	exam_structure  \
 	exam_misc \
 	exam_mod_gcd \
-	check_mul_info \
 	bugme_chinrem_gcd \
-	factor_univariate_bug \
 	pgcd_relatively_prime_bug \
 	pgcd_infinite_loop \
 	exam_cra \
@@ -77,9 +75,6 @@ check_matrices_LDADD = ../ginac/libginac.la
 
 check_lsolve_SOURCES = check_lsolve.cpp genex.cpp
 check_lsolve_LDADD = ../ginac/libginac.la
-
-check_mul_info_SOURCES = check_mul_info.cpp
-check_mul_info_LDADD = ../ginac/libginac.la
 
 exam_paranoia_SOURCES = exam_paranoia.cpp
 exam_paranoia_LDADD = ../ginac/libginac.la
@@ -261,9 +256,6 @@ time_parser_LDADD = ../ginac/libginac.la
 
 bugme_chinrem_gcd_SOURCES = bugme_chinrem_gcd.cpp
 bugme_chinrem_gcd_LDADD = ../ginac/libginac.la
-
-factor_univariate_bug_SOURCES = factor_univariate_bug.cpp
-factor_univariate_bug_LDADD = ../ginac/libginac.la
 
 pgcd_relatively_prime_bug_SOURCES = pgcd_relatively_prime_bug.cpp
 pgcd_relatively_prime_bug_LDADD = ../ginac/libginac.la

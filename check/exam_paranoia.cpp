@@ -504,6 +504,17 @@ static unsigned exam_paranoia20()
 	return result;
 }
 
+static unsigned exam_mul_info()
+{
+	symbol x("x"), y("y");
+	ex e = x*y;
+	if (!e.info(info_flags::indefinite)) {
+		clog << "eek, product of two symbols is NOT indefinite\n";
+		return 1;
+	}
+	return 0;
+}
+
 static unsigned is_polynomial_false_positive()
 {
 	unsigned result = 0;
@@ -699,6 +710,7 @@ unsigned exam_paranoia()
 	result += exam_paranoia18();  cout << '.' << flush;
 	result += exam_paranoia19();  cout << '.' << flush;
 	result += exam_paranoia20();  cout << '.' << flush;
+	result += exam_mul_info(); cout << '.' << flush;
 	result += is_polynomial_false_positive(); cout << '.' << flush;
 	result += exam_paranoia21();  cout << '.' << flush;
 	result += exam_paranoia22();  cout << '.' << flush;

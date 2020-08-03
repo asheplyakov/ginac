@@ -6,7 +6,6 @@ set(ginac_tests
 	check_inifcns
 	check_matrices
 	check_lsolve
-	check_mul_info
 	heur_gcd_bug
 	exam_paranoia
 	exam_heur_gcd
@@ -35,7 +34,6 @@ set(ginac_tests
 	exam_cra
 	exam_real_imag
 	bugme_chinrem_gcd
-	factor_univariate_bug
 	pgcd_relatively_prime_bug
 	pgcd_infinite_loop)
 

@@ -43,7 +43,10 @@ static unsigned exam_factor1()
 	ex e;
 	symbol x("x");
 	lst syms = {x};
-	
+
+	e = 1;
+	result += check_factor(e);
+
 	e = ex("1+x-x^3", syms);
 	result += check_factor(e);
 
@@ -190,6 +193,23 @@ static unsigned check_factor_expanded(const ex& e)
 	return 0;
 }
 
+static unsigned exam_factor_content()
+{
+	unsigned result = 0;
+	ex e;
+	symbol x("x"), y("y");
+
+	// Fixed 2013-07-28 by Alexei Sheplyakov in factor_univariate().
+	e = ex("174247781*x^2-1989199947807987/200000000000000", lst{x});
+	result += check_factor(e);
+
+	// Fixed 2014-05-18 by Alexei Sheplyakov in factor_multivariate().
+	e = ex("(x+y+x*y)*(3*x+2*y)", lst{x, y});
+	result += check_factor(e);
+
+	return result;
+}
+
 static unsigned exam_factor_wang()
 {
 	// these 15 polynomials are from the appendix of P.S.Wang,
@@ -260,33 +280,6 @@ static unsigned exam_factor_wang()
 	return result;
 }
 
-static unsigned check_factorization(const exvector& factors)
-{
-	ex e = dynallocate<mul>(factors);
-	ex ef = factor(e.expand());
-	if (ef.nops() != factors.size()) {
-		clog << "wrong number of factors, expected " << factors.size() <<
-			", got " << ef.nops();
-		return 1;
-	}
-	for (size_t i = 0; i < ef.nops(); ++i) {
-		if (find(factors.begin(), factors.end(), ef.op(i)) == factors.end()) {
-			clog << "wrong factorization: term not found: " << ef.op(i);
-			return 1;
-		}
-	}
-	return 0;
-}
-
-static unsigned factor_integer_content_bug()
-{
-	parser reader;
-	exvector factors;
-	factors.push_back(reader("x+y+x*y"));
-	factors.push_back(reader("3*x+2*y"));
-	return check_factorization(factors);
-}
-
 unsigned exam_factor()
 {
 	unsigned result = 0;
@@ -296,9 +289,8 @@ unsigned exam_factor()
 	result += exam_factor1(); cout << '.' << flush;
 	result += exam_factor2(); cout << '.' << flush;
 	result += exam_factor3(); cout << '.' << flush;
+	result += exam_factor_content(); cout << '.' << flush;
 	result += exam_factor_wang(); cout << '.' << flush;
-	result += factor_integer_content_bug();
-	cout << '.' << flush;
 
 	return result;
 }
