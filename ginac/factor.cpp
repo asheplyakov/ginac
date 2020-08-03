@@ -2592,7 +2592,3 @@ ex factor(const ex& poly, unsigned options)
 }
 
 } // namespace GiNaC
-
-#ifdef DEBUGFACTOR
-#include "test.h"
-#endif
