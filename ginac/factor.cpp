@@ -1491,6 +1491,9 @@ static ex factor_univariate(const ex& poly, const ex& x, unsigned int& prime)
 	poly.unitcontprim(x, unit, cont, prim_ex);
 	upoly prim;
 	upoly_from_ex(prim, prim_ex, x);
+	if (prim_ex.is_equal(1)) {
+		return poly;
+	}
 
 	// determine proper prime and minimize number of modular factors
 	prime = 3;
@@ -2454,9 +2457,9 @@ static ex factor_sqrfree(const ex& poly)
 	if ( findsymbols.syms.size() == 1 ) {
 		// univariate case
 		const ex& x = *(findsymbols.syms.begin());
-		if ( poly.ldegree(x) > 0 ) {
+		int ld = poly.ldegree(x);
+		if ( ld > 0 ) {
 			// pull out direct factors
-			int ld = poly.ldegree(x);
 			ex res = factor_univariate(expand(poly/pow(x, ld)), x);
 			return res * pow(x,ld);
 		} else {

@@ -26,8 +26,6 @@ using namespace GiNaC;
 #include <iostream>
 using namespace std;
 
-static symbol w("w"), x("x"), y("y"), z("z");
-
 static unsigned check_factor(const ex& e)
 {
 	ex ee = e.expand();
@@ -44,8 +42,7 @@ static unsigned exam_factor1()
 	unsigned result = 0;
 	ex e;
 	symbol x("x");
-	lst syms;
-	syms.append(x);
+	lst syms = {x};
 	
 	e = ex("1+x-x^3", syms);
 	result += check_factor(e);
@@ -199,7 +196,7 @@ static unsigned exam_factor_wang()
 	// "An Improved Multivariate Polynomial Factoring Algorithm"
 	unsigned result = 0;
 	ex e;
-	symbol x("x"), y("y"), z("z"), u("u");
+	symbol u("u"), w("w"), x("x"), y("y"), z("z");
 
 	e = ex("(z+x*y+10)*(x*z+y+30)*(y*z+x+20)", lst{x, y, z});
 	result += check_factor_expanded(e);
