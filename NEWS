@@ -1,5 +1,8 @@
 This file records noteworthy changes.
 
+1.7.11 (3 August 2020)
+* Fix elusive bugs in factor() and in expand().
+
 1.7.10 (28 June 2020)
 * Fix collect_common_factors() for hidden zero arguments.
 * Fix build on modern systems (C++20 and Python3).

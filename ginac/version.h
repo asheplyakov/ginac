@@ -30,7 +30,7 @@
 #define GINACLIB_MINOR_VERSION 7
 
 /* Micro version of GiNaC */
-#define GINACLIB_MICRO_VERSION 10
+#define GINACLIB_MICRO_VERSION 11
 
 // GiNaC library version information. It has very little to do with GiNaC
 // version number. In particular, library version is OS dependent. 
@@ -53,7 +53,7 @@
 //  * change matrix inverse to use default argument (twice)
 //  * remove interfaces marked as deprecated
 #define GINAC_LT_CURRENT  10
-#define GINAC_LT_REVISION 4
+#define GINAC_LT_REVISION 5
 #define GINAC_LT_AGE      4
 
 /*
