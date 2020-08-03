@@ -1797,35 +1797,54 @@ ex lcm(const ex &a, const ex &b, bool check_args)
  *  @return   vector of expairs (factor, exponent), sorted by exponents */
 static epvector sqrfree_yun(const ex &a, const symbol &x)
 {
-	ex w = a;
+	// make polynomial primitive w.r.t. x
+	ex w = a.primpart(x);
 	ex z = w.diff(x);
 	ex g = gcd(w, z);
 	if (g.is_zero()) {
-		return epvector{};
+		// manifest zero or hidden zero
+		return {};
 	}
 	if (g.is_equal(_ex1)) {
-		return epvector{expair(a, _ex1)};
+		// w(x) and w'(x) share no factors: w(x) is square-free
+		return {expair(a, _ex1)};
 	}
-	epvector results;
-	ex exponent = _ex0;
+
+	epvector factors;
+	ex i = 0;  // exponent
 	do {
 		w = quo(w, g, x);
-		if (w.is_zero()) {
-			return results;
-		}
 		z = quo(z, g, x) - w.diff(x);
-		exponent = exponent + 1;
+		i += 1;
 		if (w.is_equal(x)) {
 			// shortcut for x^n with n ∈ ℕ
-			exponent += quo(z, w.diff(x), x);
-			results.push_back(expair(w, exponent));
+			i += quo(z, w.diff(x), x);
+			factors.push_back(expair(w, i));
 			break;
 		}
 		g = gcd(w, z);
 		if (!g.is_equal(_ex1)) {
-			results.push_back(expair(g, exponent));
+			factors.push_back(expair(g, i));
 		}
 	} while (!z.is_zero());
+
+	// correct for lost factor
+	// (NB: This factor is not necessarily the unit and content lost when
+	// we made the polynomial primitive since Yun's algorithm only finds
+	// factors up to a unit.)
+	const ex lost_factor = quo(a, mul{factors}, x);
+	if (lost_factor.is_equal(_ex1)) {
+		// trivial lost factor
+		return factors;
+	}
+	if (factors[0].coeff.is_equal(1)) {
+		// multiply factor^1 with lost_factor
+		factors[0].rest *= lost_factor;
+		return factors;
+	}
+	// only factors with higher exponent: prepend lost_factor^1 to the results
+	epvector results = {expair(lost_factor, 1)};
+	std::move(factors.begin(), factors.end(), std::back_inserter(results));
 	return results;
 }
 
@@ -1891,10 +1910,14 @@ ex sqrfree(const ex &a, const lst &l)
 
 	// convert the argument from something in Q[X] to something in Z[X]
 	const numeric lcm = lcm_of_coefficients_denominators(a);
-	const ex tmp = multiply_lcm(a,lcm);
+	const ex tmp = multiply_lcm(a, lcm);
 
 	// find the factors
 	epvector factors = sqrfree_yun(tmp, x);
+	if (factors.empty()) {
+		// the polynomial was a hidden zero
+		return _ex0;
+	}
 
 	// remove symbol x and proceed recursively with the remaining symbols
 	args.remove_first();
@@ -1906,21 +1929,10 @@ ex sqrfree(const ex &a, const lst &l)
 	}
 
 	// Done with recursion, now construct the final result
-	ex result = _ex1;
-	for (auto & it : factors)
-		result *= pow(it.rest, it.coeff);
-
-	// Yun's algorithm does not account for constant factors.  (For univariate
-	// polynomials it works only in the monic case.)  We can correct this by
-	// inserting what has been lost back into the result.  For completeness
-	// we'll also have to recurse down that factor in the remaining variables.
-	if (args.nops()>0)
-		result *= sqrfree(quo(tmp, result, x), args);
-	else
-		result *= quo(tmp, result, x);
+	ex result = mul(factors);
 
 	// Put in the rational overall factor again and return
-	return result *	lcm.inverse();
+	return result * lcm.inverse();
 }
 
 
@@ -1944,10 +1956,6 @@ ex sqrfree_parfrac(const ex & a, const symbol & x)
 
 	// Factorize denominator and compute cofactors
 	epvector yun = sqrfree_yun(denom, x);
-	// Yun's algorithm does not account for constant factors.  (For univariate
-	// polynomials it works only in the monic case.)  We can correct this by
-	// inserting what has been lost back into the result.
-	ex lead_coeff  = quo(denom, mul(yun), x);
 	size_t yun_max_exponent = yun.empty() ? 0 : ex_to<numeric>(yun.back().coeff).to_int();
 	exvector factor, cofac;
 	for (size_t i=0; i<yun.size(); i++) {
@@ -1989,7 +1997,7 @@ ex sqrfree_parfrac(const ex & a, const symbol & x)
 	// Sum up decomposed fractions
 	ex sum = 0;
 	for (size_t i=0; i<num_factors; i++)
-		sum += sol(i, 0) / factor[i] / lead_coeff;
+		sum += sol(i, 0) / factor[i];
 
 	return red_poly + sum;
 }
