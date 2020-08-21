@@ -1797,8 +1797,7 @@ ex lcm(const ex &a, const ex &b, bool check_args)
  *  @return   vector of expairs (factor, exponent), sorted by exponents */
 static epvector sqrfree_yun(const ex &a, const symbol &x)
 {
-	// make polynomial primitive w.r.t. x
-	ex w = a.primpart(x);
+	ex w = a;
 	ex z = w.diff(x);
 	ex g = gcd(w, z);
 	if (g.is_zero()) {
@@ -1814,6 +1813,10 @@ static epvector sqrfree_yun(const ex &a, const symbol &x)
 	ex i = 0;  // exponent
 	do {
 		w = quo(w, g, x);
+		if (w.is_zero()) {
+			// hidden zero
+			break;
+		}
 		z = quo(z, g, x) - w.diff(x);
 		i += 1;
 		if (w.is_equal(x)) {
@@ -1829,20 +1832,18 @@ static epvector sqrfree_yun(const ex &a, const symbol &x)
 	} while (!z.is_zero());
 
 	// correct for lost factor
-	// (NB: This factor is not necessarily the unit and content lost when
-	// we made the polynomial primitive since Yun's algorithm only finds
-	// factors up to a unit.)
+	// (being based on GCDs, Yun's algorithm only finds factors up to a unit)
 	const ex lost_factor = quo(a, mul{factors}, x);
 	if (lost_factor.is_equal(_ex1)) {
 		// trivial lost factor
 		return factors;
 	}
-	if (factors[0].coeff.is_equal(1)) {
+	if (!factors.empty() && factors[0].coeff.is_equal(1)) {
 		// multiply factor^1 with lost_factor
 		factors[0].rest *= lost_factor;
 		return factors;
 	}
-	// only factors with higher exponent: prepend lost_factor^1 to the results
+	// no factor^1: prepend lost_factor^1 to the results
 	epvector results = {expair(lost_factor, 1)};
 	std::move(factors.begin(), factors.end(), std::back_inserter(results));
 	return results;
