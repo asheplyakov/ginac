@@ -197,7 +197,7 @@ static ex log_series(const ex &arg,
 	// maybe substitution of rel into arg fails because of a pole
 	try {
 		arg_pt = arg.subs(rel, subs_options::no_pattern);
-	} catch (pole_error) {
+	} catch (pole_error &) {
 		must_expand_arg = true;
 	}
 	// or we are at the branch point anyways
