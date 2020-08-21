@@ -588,54 +588,8 @@ static unsigned exam_paranoia23()
 	return result;
 }
 
-// Bug in sqrfree_yun (fixed 2016-02-02).
-static unsigned exam_paranoia24()
-{
-	unsigned result = 0;
-	symbol x("x");
-	ex e;
-
-	e = (x-1)*(x+1) - x*x + 1;  // an unexpanded 0...
-	try {
-		ex f = sqrfree(e);
-		if (!f.is_zero()) {
-			clog << "sqrfree(" << e << ") returns " << f << " instead of 0\n";
-			++result;
-		}
-	} catch (const exception &err) {
-		clog << "sqrfree(" << e << ") throws " << err.what() << endl;
-		++result;
-	}
-
-	e = pow(x-1,3) - expand(pow(x-1,3));  // ...still after differentiating...
-	try {
-		ex f = sqrfree(e);
-		if (!f.is_zero()) {
-			clog << "sqrfree(" << e << ") returns " << f << " instead of 0\n";
-			++result;
-		}
-	} catch (const exception &err) {
-		clog << "sqrfree(" << e << ") throws " << err.what() << endl;
-		++result;
-	}
-
-	e = pow(x-1,4) - expand(pow(x-1,4));  // ...and after differentiating twice.
-	try {
-		ex f = sqrfree(e);
-		if (!f.is_zero()) {
-			clog << "sqrfree(" << e << ") returns " << f << " instead of 0\n";
-			++result;
-		}
-	} catch (const exception &err) {
-		clog << "sqrfree(" << e << ") throws " << err.what() << endl;
-		++result;
-	}
-
-	return result;
-}
-
 // Bug in add ctor
-unsigned exam_paranoia25()
+unsigned exam_paranoia24()
 {
 	symbol a("a"), b("b"), c("c");
 	ex e = -a + 2*b + c;
@@ -648,7 +602,7 @@ unsigned exam_paranoia25()
 }
 
 // Bug in partial fraction expansion
-unsigned exam_paranoia26()
+unsigned exam_paranoia25()
 {
 	symbol x("x");
 	ex ex1=pow(x,4)/(x-1)/4;
@@ -663,7 +617,7 @@ unsigned exam_paranoia26()
 }
 
 // Bug in power expansion
-unsigned exam_paranoia27()
+unsigned exam_paranoia26()
 {
 	unsigned result = 0;
 	symbol x("x"), y("y"), a("a");
@@ -718,7 +672,6 @@ unsigned exam_paranoia()
 	result += exam_paranoia24();  cout << '.' << flush;
 	result += exam_paranoia25();  cout << '.' << flush;
 	result += exam_paranoia26();  cout << '.' << flush;
-	result += exam_paranoia27();  cout << '.' << flush;
 	
 	return result;
 }

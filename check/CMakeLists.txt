@@ -20,6 +20,7 @@ set(ginac_tests
 	exam_polygcd
 	exam_collect_common_factors
 	exam_normalization
+	exam_sqrfree
 	exam_factor
 	exam_pseries
 	exam_matrices

@@ -18,6 +18,7 @@ EXAMS = exam_paranoia \
 	exam_polygcd  \
 	exam_collect_common_factors \
 	exam_normalization  \
+	exam_sqrfree  \
 	exam_factor \
 	exam_pseries  \
 	exam_matrices  \
@@ -115,6 +116,9 @@ exam_collect_common_factors_LDADD = ../ginac/libginac.la
 
 exam_normalization_SOURCES = exam_normalization.cpp
 exam_normalization_LDADD = ../ginac/libginac.la
+
+exam_sqrfree_SOURCES = exam_sqrfree.cpp
+exam_sqrfree_LDADD = ../ginac/libginac.la
 
 exam_factor_SOURCES = exam_factor.cpp
 exam_factor_LDADD = ../ginac/libginac.la
