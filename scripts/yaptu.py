@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+
 """
 Yet Another Python Templating Utility, Version 1.2, by Alex Martelli.
 Distributed under PSF license (http://docs.python.org/license.html).

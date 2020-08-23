@@ -167,6 +167,14 @@ endif()
 
 find_program(MAKEINFO makeinfo)
 find_program(FIG2DEV fig2dev)
+find_program(PYTHON python)
+if (NOT PYTHON)
+	find_program(PYTHON python3)
+endif()
+if (NOT PYTHON)
+	message(FATAL_ERROR "Python version 3 or 2 is required")
+endif()
+
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 add_definitions(-DHAVE_CONFIG_H)

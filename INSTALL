@@ -27,7 +27,8 @@ Known not to work with:
  - GCC < 4.6.0 due to missing C++-11 support
 
 If you install from git, you also need GNU autoconf (>=2.59), automake (>=1.8),
-libtool (>= 1.5), python3, bison (>= 2.3), flex (>= 2.5.33) to be installed.
+libtool (>= 1.5), python (version 2.7 or 3.x), bison (>= 2.3), flex (>= 2.5.33)
+to be installed.
 
 
 INSTALLATION

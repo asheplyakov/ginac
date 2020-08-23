@@ -45,7 +45,7 @@ macro(pdflatex_process texfile)
 	add_custom_command(
 		OUTPUT ${_ind}
 		COMMAND ${MAKEINDEX_COMPILER} ${_idx}
-		COMMAND python3 ${_fixupind} ${_idx}
+		COMMAND ${PYTHON} ${_fixupind} ${_idx}
 		WORKING_DIRECTORY ${_dirname}
 		DEPENDS ${texfile} ${_idx}
 		COMMENT "MAKEINDEX ${_basename}.idx")

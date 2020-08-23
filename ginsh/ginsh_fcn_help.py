@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+
 # encoding: utf-8
 # Convert help for ginsh functions from man page to C source
 import sys, re, optparse
