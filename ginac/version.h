@@ -27,10 +27,10 @@
 #define GINACLIB_MAJOR_VERSION 1
 
 /* Minor version of GiNaC */
-#define GINACLIB_MINOR_VERSION 7
+#define GINACLIB_MINOR_VERSION 8
 
 /* Micro version of GiNaC */
-#define GINACLIB_MICRO_VERSION 11
+#define GINACLIB_MICRO_VERSION 0
 
 // GiNaC library version information. It has very little to do with GiNaC
 // version number. In particular, library version is OS dependent. 
@@ -52,9 +52,9 @@
 // TODO, when setting GINAC_LT_REVISION to 0:
 //  * change matrix inverse to use default argument (twice)
 //  * remove interfaces marked as deprecated
-#define GINAC_LT_CURRENT  10
-#define GINAC_LT_REVISION 5
-#define GINAC_LT_AGE      4
+#define GINAC_LT_CURRENT  11
+#define GINAC_LT_REVISION 0
+#define GINAC_LT_AGE      5
 
 /*
  * GiNaC archive file version information.
