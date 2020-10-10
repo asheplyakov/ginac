@@ -520,15 +520,7 @@ must be of a certain type (e.g. a symbol, or a list). The first argument has
 number 0, the second argument number 1, etc.
 .SH AUTHOR
 .TP
-The GiNaC Group:
-.br
-Christian Bauer <Christian.Bauer@uni-mainz.de>
-.br
-Alexander Frink <Alexander.Frink@uni-mainz.de>
-.br
-Richard Kreckel <Richard.Kreckel@uni-mainz.de>
-.br
-Jens Vollinga <vollinga@thep.physik.uni-mainz.de>
+The GiNaC maintainers <https://www.ginac.de/>.
 .SH SEE ALSO
 GiNaC Tutorial \- An open framework for symbolic computation within the
 C++ programming language
