@@ -68,63 +68,6 @@ template <>
 inline void container_storage<std::vector>::reserve(std::vector<ex> & v, size_t n) { v.reserve(n); }
 
 
-/** Helper template to allow initialization of containers via an overloaded
- *  comma operator (idea stolen from Blitz++). */
-template <typename T, typename STLT>
-class container_init {
-public:
-	container_init(STLT & s) : stlt(s) {}
-
-	container_init<T, STLT> operator,(const T & x)
-	{
-		stlt.push_back(x);
-		return container_init<T, STLT>(stlt);
-	}
-
-	// The following specializations produce much tighter code than the
-	// general case above
-
-	container_init<T, STLT> operator,(int x)
-	{
-		stlt.push_back(x);
-		return container_init<T, STLT>(stlt);
-	}
-
-	container_init<T, STLT> operator,(unsigned int x)
-	{
-		stlt.push_back(x);
-		return container_init<T, STLT>(stlt);
-	}
-
-	container_init<T, STLT> operator,(long x)
-	{
-		stlt.push_back(x);
-		return container_init<T, STLT>(stlt);
-	}
-
-	container_init<T, STLT> operator,(unsigned long x)
-	{
-		stlt.push_back(x);
-		return container_init<T, STLT>(stlt);
-	}
-
-	container_init<T, STLT> operator,(double x)
-	{
-		stlt.push_back(x);
-		return container_init<T, STLT>(stlt);
-	}
-
-	container_init<T, STLT> operator,(const symbol & x)
-	{
-		stlt.push_back(T(x));
-		return container_init<T, STLT>(stlt);
-	}
-
-private:
-	container_init();
-	STLT & stlt;
-};
-
 /** Wrapper template for making GiNaC classes out of STL containers. */
 template <template <class T, class = std::allocator<T>> class C>
 class container : public basic, public container_storage<C> {
@@ -167,36 +110,6 @@ public:
 	{
 		setflag(get_default_flags());
 	}
-
-	explicit container(const ex & p1) attribute_deprecated;
-	container(const ex & p1, const ex & p2) attribute_deprecated;
-	container(const ex & p1, const ex & p2, const ex & p3) attribute_deprecated;
-	container(const ex & p1, const ex & p2, const ex & p3, const ex & p4) attribute_deprecated;
-	container(const ex & p1, const ex & p2, const ex & p3, const ex & p4, const ex & p5) attribute_deprecated;
-	container(const ex & p1, const ex & p2, const ex & p3, const ex & p4, const ex & p5, const ex & p6) attribute_deprecated;
-	container(const ex & p1, const ex & p2, const ex & p3, const ex & p4, const ex & p5, const ex & p6, const ex & p7) attribute_deprecated;
-	container(const ex & p1, const ex & p2, const ex & p3, const ex & p4, const ex & p5, const ex & p6, const ex & p7, const ex & p8) attribute_deprecated;
-	container(const ex & p1, const ex & p2, const ex & p3, const ex & p4, const ex & p5, const ex & p6, const ex & p7, const ex & p8,
-	          const ex & p9) attribute_deprecated;
-	container(const ex & p1, const ex & p2, const ex & p3, const ex & p4, const ex & p5, const ex & p6, const ex & p7, const ex & p8,
-	          const ex & p9, const ex & p10) attribute_deprecated;
-	container(const ex & p1, const ex & p2, const ex & p3, const ex & p4, const ex & p5, const ex & p6, const ex & p7, const ex & p8,
-	          const ex & p9, const ex & p10, const ex & p11) attribute_deprecated;
-	container(const ex & p1, const ex & p2, const ex & p3, const ex & p4, const ex & p5, const ex & p6, const ex & p7, const ex & p8,
-	          const ex & p9, const ex & p10, const ex & p11, const ex & p12) attribute_deprecated;
-	container(const ex & p1, const ex & p2, const ex & p3, const ex & p4, const ex & p5, const ex & p6, const ex & p7, const ex & p8,
-	          const ex & p9, const ex & p10, const ex & p11, const ex & p12, const ex & p13) attribute_deprecated;
-	container(const ex & p1, const ex & p2, const ex & p3, const ex & p4, const ex & p5, const ex & p6, const ex & p7, const ex & p8,
-	          const ex & p9, const ex & p10, const ex & p11, const ex & p12, const ex & p13, const ex & p14) attribute_deprecated;
-	container(const ex & p1, const ex & p2, const ex & p3, const ex & p4, const ex & p5, const ex & p6, const ex & p7, const ex & p8,
-	          const ex & p9, const ex & p10, const ex & p11, const ex & p12, const ex & p13, const ex & p14, const ex & p15) attribute_deprecated;
-	container(const ex & p1, const ex & p2, const ex & p3, const ex & p4, const ex & p5, const ex & p6, const ex & p7, const ex & p8,
-	          const ex & p9, const ex & p10, const ex & p11, const ex & p12, const ex & p13, const ex & p14, const ex & p15, const ex & p16) attribute_deprecated;
-
-	// First step of initialization of container with a comma-separated
-	// sequence of expressions. Subsequent steps are handled by
-	// container_init<>::operator,().
-	container_init<ex, STLT> operator=(const ex & x) attribute_deprecated;
 
 	// functions overriding virtual functions from base classes
 public:
@@ -341,85 +254,6 @@ template <template <class T, class = std::allocator<T>> class C>
 container<C>::container()
 {
 	setflag(get_default_flags());
-}
-
-/** Deprecatd constructors (prefer initializer list) */
-template <template <class T, class = std::allocator<T>> class C>
-container<C>::container(const ex & p1)
-  : container_storage<C>(1, p1) { setflag(get_default_flags()); }
-
-template <template <class T, class = std::allocator<T>> class C>
-container<C>::container(const ex & p1, const ex & p2)
-  : container_storage<C>{p1, p2} { setflag(get_default_flags()); }
-
-template <template <class T, class = std::allocator<T>> class C>
-container<C>::container(const ex & p1, const ex & p2, const ex & p3)
-  : container_storage<C>{p1, p2, p3} { setflag(get_default_flags()); }
-
-template <template <class T, class = std::allocator<T>> class C>
-container<C>::container(const ex & p1, const ex & p2, const ex & p3, const ex & p4)
-  : container_storage<C>{p1, p2, p3, p4} { setflag(get_default_flags()); }
-
-template <template <class T, class = std::allocator<T>> class C>
-container<C>::container(const ex & p1, const ex & p2, const ex & p3, const ex & p4, const ex & p5)
-  : container_storage<C>{p1, p2, p3, p4, p5} { setflag(get_default_flags()); }
-
-template <template <class T, class = std::allocator<T>> class C>
-container<C>::container(const ex & p1, const ex & p2, const ex & p3, const ex & p4, const ex & p5, const ex & p6)
-  : container_storage<C>{p1, p2, p3, p4, p5, p6} { setflag(get_default_flags()); }
-
-template <template <class T, class = std::allocator<T>> class C>
-container<C>::container(const ex & p1, const ex & p2, const ex & p3, const ex & p4, const ex & p5, const ex & p6, const ex & p7)
-  : container_storage<C>{p1, p2, p3, p4, p5, p6, p7} { setflag(get_default_flags()); }
-
-template <template <class T, class = std::allocator<T>> class C>
-container<C>::container(const ex & p1, const ex & p2, const ex & p3, const ex & p4, const ex & p5, const ex & p6, const ex & p7, const ex & p8)
-  : container_storage<C>{p1, p2, p3, p4, p5, p6, p7, p8} { setflag(get_default_flags()); }
-
-template <template <class T, class = std::allocator<T>> class C>
-container<C>::container(const ex & p1, const ex & p2, const ex & p3, const ex & p4, const ex & p5, const ex & p6, const ex & p7, const ex & p8,
-                        const ex & p9)
-  : container_storage<C>{p1, p2, p3, p4, p5, p6, p7, p8, p9} { setflag(get_default_flags()); }
-
-template <template <class T, class = std::allocator<T>> class C>
-container<C>::container(const ex & p1, const ex & p2, const ex & p3, const ex & p4, const ex & p5, const ex & p6, const ex & p7, const ex & p8,
-                        const ex & p9, const ex & p10)
-  : container_storage<C>{p1, p2, p3, p4, p5, p6, p7, p8, p9, p10} { setflag(get_default_flags()); }
-
-template <template <class T, class = std::allocator<T>> class C>
-container<C>::container(const ex & p1, const ex & p2, const ex & p3, const ex & p4, const ex & p5, const ex & p6, const ex & p7, const ex & p8,
-                        const ex & p9, const ex & p10, const ex & p11)
-  : container_storage<C>{p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11} { setflag(get_default_flags()); }
-
-template <template <class T, class = std::allocator<T>> class C>
-container<C>::container(const ex & p1, const ex & p2, const ex & p3, const ex & p4, const ex & p5, const ex & p6, const ex & p7, const ex & p8,
-                        const ex & p9, const ex & p10, const ex & p11, const ex & p12)
-  : container_storage<C>{p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12} { setflag(get_default_flags()); }
-
-template <template <class T, class = std::allocator<T>> class C>
-container<C>::container(const ex & p1, const ex & p2, const ex & p3, const ex & p4, const ex & p5, const ex & p6, const ex & p7, const ex & p8,
-                        const ex & p9, const ex & p10, const ex & p11, const ex & p12, const ex & p13)
-  : container_storage<C>{p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13} { setflag(get_default_flags()); }
-
-template <template <class T, class = std::allocator<T>> class C>
-container<C>::container(const ex & p1, const ex & p2, const ex & p3, const ex & p4, const ex & p5, const ex & p6, const ex & p7, const ex & p8,
-                        const ex & p9, const ex & p10, const ex & p11, const ex & p12, const ex & p13, const ex & p14)
-  : container_storage<C>{p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14} { setflag(get_default_flags()); }
-
-template <template <class T, class = std::allocator<T>> class C>
-container<C>::container(const ex & p1, const ex & p2, const ex & p3, const ex & p4, const ex & p5, const ex & p6, const ex & p7, const ex & p8,
-                        const ex & p9, const ex & p10, const ex & p11, const ex & p12, const ex & p13, const ex & p14, const ex & p15)
-  : container_storage<C>{p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15} { setflag(get_default_flags()); }
-template <template <class T, class = std::allocator<T>> class C>
-container<C>::container(const ex & p1, const ex & p2, const ex & p3, const ex & p4, const ex & p5, const ex & p6, const ex & p7, const ex & p8,
-                        const ex & p9, const ex & p10, const ex & p11, const ex & p12, const ex & p13, const ex & p14, const ex & p15, const ex & p16)
-  : container_storage<C>{p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16} { setflag(get_default_flags()); }
-
-template <template <class T, class = std::allocator<T>> class C>
-container_init<ex, typename container_storage<C>::STLT> container<C>::operator=(const ex & x)
-{
-	this->seq.push_back(x);
-	return container_init<ex, typename container_storage<C>::STLT>(this->seq);
 }
 
 template <template <class T, class = std::allocator<T>> class C>
