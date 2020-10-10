@@ -14,6 +14,7 @@ set(ginac_tests
 	exam_powerlaws
 	exam_inifcns
 	exam_inifcns_nstdsums
+	exam_inifcns_elliptic
 	exam_differentiation
 	exam_polygcd
 	exam_collect_common_factors

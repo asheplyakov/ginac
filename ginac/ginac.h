@@ -68,6 +68,8 @@
 
 #include "factor.h"
 
+#include "integration_kernel.h"
+
 #include "excompiler.h"
 
 #ifndef IN_GINAC

@@ -20,7 +20,9 @@ set(ginaclib_sources
     inifcns.cpp
     inifcns_gamma.cpp
     inifcns_nstdsums.cpp
+    inifcns_elliptic.cpp
     inifcns_trans.cpp
+    integration_kernel.cpp
     integral.cpp
     lst.cpp
     matrix.cpp
@@ -88,6 +90,7 @@ set(ginaclib_public_headers
     indexed.h 
     inifcns.h
     integral.h
+    integration_kernel.h
     lst.h
     matrix.h
     mul.h
@@ -116,6 +119,7 @@ set(ginaclib_private_headers
     utils.h
     crc32.h
     hash_seed.h
+    utils_multi_iterator.h
     parser/lexer.h
     parser/debug.h
     polynomial/gcd_euclid.h

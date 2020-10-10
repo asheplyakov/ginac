@@ -3826,6 +3826,7 @@ avoided.
 * Symmetrization::
 * Built-in functions::              List of predefined mathematical functions.
 * Multiple polylogarithms::
+* Iterated integrals::
 * Complex expressions::
 * Solving linear systems of equations::
 * Input/output::                    Input and output of expressions.
@@ -5873,6 +5874,12 @@ GiNaC contains the following predefined mathematical functions:
 @cindex @code{zeta()}
 @item @code{zetaderiv(n, x)}
 @tab derivatives of Riemann's zeta function
+@item @code{iterated_integral(a, y)}
+@tab iterated integral
+@cindex @code{iterated_integral()}
+@item @code{iterated_integral(a, y, N)}
+@tab iterated integral with explicit truncation parameter
+@cindex @code{iterated_integral()}
 @item @code{tgamma(x)}
 @tab gamma function
 @cindex @code{tgamma()}
@@ -5888,6 +5895,12 @@ GiNaC contains the following predefined mathematical functions:
 @cindex @code{psi()}
 @item @code{psi(n, x)}
 @tab derivatives of psi function (polygamma functions)
+@item @code{EllipticK(x)}
+@tab complete elliptic integral of the first kind
+@cindex @code{EllipticK()}
+@item @code{EllipticE(x)}
+@tab complete elliptic integral of the second kind
+@cindex @code{EllipticE()}
 @item @code{factorial(n)}
 @tab factorial function @math{n!}
 @cindex @code{factorial()}
@@ -5968,7 +5981,7 @@ GiNaC uses the opposite order: firstly expands the function and then its
 argument. Of course, a user can fine-tune this behavior by sequential
 calls of several @code{expand()} methods with desired flags.
 
-@node Multiple polylogarithms, Complex expressions, Built-in functions, Methods and functions
+@node Multiple polylogarithms, Iterated integrals, Built-in functions, Methods and functions
 @c    node-name, next, previous, up
 @subsection Multiple polylogarithms
 
@@ -6151,7 +6164,71 @@ J.Borwein, D.Bradley, D.Broadhurst, P.Lisonek, Trans.Amer.Math.Soc. 353/3 (2001)
 @cite{Numerical Evaluation of Multiple Polylogarithms}, 
 J.Vollinga, S.Weinzierl, hep-ph/0410259
 
-@node Complex expressions, Solving linear systems of equations, Multiple polylogarithms, Methods and functions
+@node Iterated integrals, Complex expressions, Multiple polylogarithms, Methods and functions
+@c    node-name, next, previous, up
+@subsection Iterated integrals
+
+Multiple polylogarithms are a particular example of iterated integrals.
+An iterated integral is defined by the function @code{iterated_integral(a,y)}.
+The variable @code{y} gives the upper integration limit for the outermost integration, by convention the lower integration limit is always set to zero.
+The variable @code{a} must be a GiNaC @code{lst} containing sub-classes of @code{integration_kernel} as elements.
+The depth of the iterated integral corresponds to the number of elements of @code{a}.
+The available integrands for iterated integrals are
+(for a more detailed description the user is referred to the publications listed at the end of this section)
+@cartouche
+@multitable @columnfractions .40 .60
+@item @strong{Class} @tab @strong{Description}
+@item @code{integration_kernel()}
+@tab Base class, represents the one-form @math{dy}
+@cindex @code{integration_kernel()}
+@item @code{basic_log_kernel()}
+@tab Logarithmic one-form @math{dy/y}
+@cindex @code{basic_log_kernel()}
+@item @code{multiple_polylog_kernel(z_j)}
+@tab The one-form @math{dy/(y-z_j)}
+@cindex @code{multiple_polylog_kernel()}
+@item @code{ELi_kernel(n, m, x, y)}
+@tab The one form @math{ELi_{n;m}(x;y;q) dq/q}
+@cindex @code{ELi_kernel()}
+@item @code{Ebar_kernel(n, m, x, y)}
+@tab The one form @math{\overline{E}_{n;m}(x;y;q) dq/q}
+@cindex @code{Ebar_kernel()}
+@item @code{Kronecker_dtau_kernel(k, z_j, K, C_k)}
+@tab The one form @math{C_k K (k-1)/(2 \pi i)^k g^{(k)}(z_j,K \tau) dq/q}
+@cindex @code{Kronecker_dtau_kernel()}
+@item @code{Kronecker_dz_kernel(k, z_j, tau, K, C_k)}
+@tab The one form @math{C_k (2 \pi i)^{2-k} g^{(k-1)}(z-z_j,K \tau) dz}
+@cindex @code{Kronecker_dz_kernel()}
+@item @code{Eisenstein_kernel(k, N, a, b, K, C_k)}
+@tab The one form @math{C_k E_{k,N,a,b,K}(\tau) dq/q}
+@cindex @code{Eisenstein_kernel()}
+@item @code{Eisenstein_h_kernel(k, N, r, s, C_k)}
+@tab The one form @math{C_k h_{k,N,r,s}(\tau) dq/q}
+@cindex @code{Eisenstein_h_kernel()}
+@item @code{modular_form_kernel(k, P, C_k)}
+@tab The one form @math{C_k P dq/q}
+@cindex @code{modular_form_kernel()}
+@item @code{user_defined_kernel(f, y)}
+@tab The one form @math{f(y) dy}
+@cindex @code{user_defined_kernel()}
+@end multitable
+@end cartouche
+All parameters are assumed to be such that all integration kernels have a convergent Laurent expansion
+around zero with at most a simple pole at zero.
+The iterated integral may also be called with an optional third parameter
+@code{iterated_integral(a,y,N_trunc)}, in which case the numerical evaluation will truncate the series
+expansion at order @code{N_trunc}.
+
+The classes @code{Eisenstein_kernel()}, @code{Eisenstein_h_kernel()} and @code{modular_form_kernel()}
+provide a method @code{q_expansion_modular_form(q, order)}, which can used to obtain the q-expansion
+of @math{E_{k,N,a,b,K}(\tau)}, @math{h_{k,N,r,s}(\tau)} or @math{P} to the specified order.
+
+Useful publications:
+
+@cite{Numerical evaluation of iterated integrals related to elliptic Feynman integrals}, 
+M.Walden, S.Weinzierl, arXiv:2010.xxxxx
+
+@node Complex expressions, Solving linear systems of equations, Iterated integrals, Methods and functions
 @c    node-name, next, previous, up
 @section Complex expressions
 @c

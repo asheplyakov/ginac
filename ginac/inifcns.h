@@ -177,6 +177,32 @@ template<> inline bool is_the_function<psi_SERIAL>(const ex & x)
 	return is_the_function<psi1_SERIAL>(x) || is_the_function<psi2_SERIAL>(x);
 }
 	
+/** Complete elliptic integral of the first kind. */
+DECLARE_FUNCTION_1P(EllipticK)
+
+/** Complete elliptic integral of the second kind. */
+DECLARE_FUNCTION_1P(EllipticE)
+
+// overloading at work: we cannot use the macros here
+/** Iterated integral. */
+class iterated_integral2_SERIAL { public: static unsigned serial; };
+template<typename T1, typename T2>
+inline function iterated_integral(const T1& kernel_lst, const T2& lambda) {
+	return function(iterated_integral2_SERIAL::serial, ex(kernel_lst), ex(lambda));
+}
+/** Iterated integral with explicit truncation. */
+class iterated_integral3_SERIAL { public: static unsigned serial; };
+template<typename T1, typename T2, typename T3>
+inline function iterated_integral(const T1& kernel_lst, const T2& lambda, const T3& N_trunc) {
+	return function(iterated_integral3_SERIAL::serial, ex(kernel_lst), ex(lambda), ex(N_trunc));
+}
+class iterated_integral_SERIAL;
+template<> inline bool is_the_function<iterated_integral_SERIAL>(const ex& x)
+{
+	return is_the_function<iterated_integral2_SERIAL>(x) || is_the_function<iterated_integral3_SERIAL>(x);
+}
+
+
 /** Factorial function. */
 DECLARE_FUNCTION_1P(factorial)
 

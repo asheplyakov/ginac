@@ -574,6 +574,105 @@ static ex f_unit(const exprseq &e)
 	return e[0].unit(e[1]);
 }
 
+static ex f_basic_log_kernel(const exprseq &e)
+{
+	return basic_log_kernel();	
+}
+
+static ex f_multiple_polylog_kernel(const exprseq &e)
+{
+	return multiple_polylog_kernel(e[0]);	
+}
+
+static ex f_ELi_kernel(const exprseq &e)
+{
+	return ELi_kernel(e[0],e[1],e[2],e[3]);	
+}
+
+static ex f_Ebar_kernel(const exprseq &e)
+{
+	return Ebar_kernel(e[0],e[1],e[2],e[3]);	
+}
+
+static ex f_Kronecker_dtau_kernel_4(const exprseq &e)
+{
+	return Kronecker_dtau_kernel(e[0],e[1],e[2],e[3]);	
+}
+
+static ex f_Kronecker_dtau_kernel_3(const exprseq &e)
+{
+	return Kronecker_dtau_kernel(e[0],e[1],e[2]);	
+}
+
+static ex f_Kronecker_dtau_kernel_2(const exprseq &e)
+{
+	return Kronecker_dtau_kernel(e[0],e[1]);	
+}
+
+static ex f_Kronecker_dz_kernel_5(const exprseq &e)
+{
+	return Kronecker_dz_kernel(e[0],e[1],e[2],e[3],e[4]);	
+}
+
+static ex f_Kronecker_dz_kernel_4(const exprseq &e)
+{
+	return Kronecker_dz_kernel(e[0],e[1],e[2],e[3]);	
+}
+
+static ex f_Kronecker_dz_kernel_3(const exprseq &e)
+{
+	return Kronecker_dz_kernel(e[0],e[1],e[2]);	
+}
+
+static ex f_Eisenstein_kernel_6(const exprseq &e)
+{
+	return Eisenstein_kernel(e[0],e[1],e[2],e[3],e[4],e[5]);	
+}
+
+static ex f_Eisenstein_kernel_5(const exprseq &e)
+{
+	return Eisenstein_kernel(e[0],e[1],e[2],e[3],e[4]);	
+}
+
+static ex f_Eisenstein_h_kernel_5(const exprseq &e)
+{
+	return Eisenstein_h_kernel(e[0],e[1],e[2],e[3],e[4]);	
+}
+
+static ex f_Eisenstein_h_kernel_4(const exprseq &e)
+{
+	return Eisenstein_h_kernel(e[0],e[1],e[2],e[3]);	
+}
+
+static ex f_modular_form_kernel_3(const exprseq &e)
+{
+	return modular_form_kernel(e[0],e[1],e[2]);	
+}
+
+static ex f_modular_form_kernel_2(const exprseq &e)
+{
+	return modular_form_kernel(e[0],e[1]);	
+}
+
+static ex f_user_defined_kernel(const exprseq &e)
+{
+	return user_defined_kernel(e[0],e[1]);	
+}
+
+static ex f_q_expansion_modular_form(const exprseq &e)
+{
+	if ( is_a<Eisenstein_kernel>(e[0]) ) {
+		return ex_to<Eisenstein_kernel>(e[0]).q_expansion_modular_form(e[1], ex_to<numeric>(e[2]).to_int());
+	}	
+	if ( is_a<Eisenstein_h_kernel>(e[0]) ) {
+		return ex_to<Eisenstein_h_kernel>(e[0]).q_expansion_modular_form(e[1], ex_to<numeric>(e[2]).to_int());
+	}	
+	if ( is_a<modular_form_kernel>(e[0]) ) {
+		return ex_to<modular_form_kernel>(e[0]).q_expansion_modular_form(e[1], ex_to<numeric>(e[2]).to_int());
+	}	
+	throw(std::invalid_argument("first argument must be a modular form"));
+}
+
 static ex f_dummy(const exprseq &e)
 {
 	throw(std::logic_error("dummy function called (shouldn't happen)"));
@@ -650,6 +749,24 @@ static const fcn_init builtin_fcns[] = {
 	{"transpose", f_transpose, 1},
 	{"unassign", f_unassign, 1},
 	{"unit", f_unit, 2},
+	{"basic_log_kernel", f_basic_log_kernel, 0},
+	{"multiple_polylog_kernel", f_multiple_polylog_kernel, 1},
+	{"ELi_kernel", f_ELi_kernel, 4},
+	{"Ebar_kernel", f_Ebar_kernel, 4},
+	{"Kronecker_dtau_kernel", f_Kronecker_dtau_kernel_4, 4},
+	{"Kronecker_dtau_kernel", f_Kronecker_dtau_kernel_3, 3},
+	{"Kronecker_dtau_kernel", f_Kronecker_dtau_kernel_2, 2},
+	{"Kronecker_dz_kernel", f_Kronecker_dz_kernel_5, 5},
+	{"Kronecker_dz_kernel", f_Kronecker_dz_kernel_4, 4},
+	{"Kronecker_dz_kernel", f_Kronecker_dz_kernel_3, 3},
+	{"Eisenstein_kernel", f_Eisenstein_kernel_6, 6},
+	{"Eisenstein_kernel", f_Eisenstein_kernel_5, 5},
+	{"Eisenstein_h_kernel", f_Eisenstein_h_kernel_5, 5},
+	{"Eisenstein_h_kernel", f_Eisenstein_h_kernel_4, 4},
+	{"modular_form_kernel", f_modular_form_kernel_3, 3},
+	{"modular_form_kernel", f_modular_form_kernel_2, 2},
+	{"user_defined_kernel", f_user_defined_kernel, 2},
+	{"q_expansion_modular_form", f_q_expansion_modular_form, 3},
 	{nullptr, f_dummy, 0}        // End marker
 };
 
@@ -681,11 +798,15 @@ static const fcn_help_init builtin_help[] = {
 	{"tan", "tangent function"},
 	{"tanh", "hyperbolic tangent function"},
 	{"zeta", "zeta function\nzeta(x) is Riemann's zeta function, zetaderiv(n,x) its nth derivative.\nIf x is a GiNaC::lst, it is a multiple zeta value\nzeta(x,s) is an alternating Euler sum"},
+	{"G", "multiple polylogarithm (integral representation)"},
 	{"Li2", "dilogarithm"},
 	{"Li3", "trilogarithm"},
 	{"Li", "(multiple) polylogarithm"},
 	{"S", "Nielsen's generalized polylogarithm"},
 	{"H", "harmonic polylogarithm"},
+	{"EllipticK", "complete elliptic integral of the first kind"},
+	{"EllipticE", "complete elliptic integral of the second kind"},
+	{"iterated_integral", "iterated integral"},
 	{"Order", "order term function (for truncated power series)"},
 	{"Derivative", "inert differential operator"},
 	{nullptr, nullptr}  // End marker

@@ -14,6 +14,7 @@ EXAMS = exam_paranoia \
 	exam_powerlaws  \
 	exam_inifcns \
 	exam_inifcns_nstdsums \
+	exam_inifcns_elliptic \
 	exam_differentiation  \
 	exam_polygcd  \
 	exam_collect_common_factors \
@@ -104,6 +105,9 @@ exam_inifcns_LDADD = ../ginac/libginac.la
 exam_inifcns_nstdsums_SOURCES = exam_inifcns_nstdsums.cpp \
 				exam_inifcns_nstdsums.h
 exam_inifcns_nstdsums_LDADD = ../ginac/libginac.la
+
+exam_inifcns_elliptic_SOURCES = exam_inifcns_elliptic.cpp
+exam_inifcns_elliptic_LDADD = ../ginac/libginac.la
 
 exam_differentiation_SOURCES = exam_differentiation.cpp
 exam_differentiation_LDADD = ../ginac/libginac.la
