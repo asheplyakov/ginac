@@ -2059,6 +2059,15 @@ static ex replace_with_symbol(const ex & e, exmap & repl, exmap & rev_lookup, ls
 	if (it != rev_lookup.end())
 		return it->second;
 
+	// The expression can be the base of substituted power, which requires a more careful search
+	if (! is_a<numeric>(e_replaced))
+		for (auto & it : repl)
+			if (is_a<power>(it.second) && e_replaced.is_equal(it.second.op(0))) {
+				ex degree = pow(it.second.op(1), _ex_1);
+				if (is_a<numeric>(degree) && ex_to<numeric>(degree).is_integer())
+					return pow(it.first, degree);
+			}
+
 	// We treat powers and the exponent functions differently because
 	// they can be rationalised more efficiently
 	if (is_a<function>(e_replaced) && is_ex_the_function(e_replaced, exp)) {
@@ -2089,6 +2098,53 @@ static ex replace_with_symbol(const ex & e, exmap & repl, exmap & rev_lookup, ls
 					}
 				}
 			}
+		}
+	} else if (is_a<power>(e_replaced) && !is_a<numeric>(e_replaced.op(0)) // We do not replace simple monomials like x^3 or sqrt(2)
+	           && ! (is_a<symbol>(e_replaced.op(0))
+	               && is_a<numeric>(e_replaced.op(1)) && ex_to<numeric>(e_replaced.op(1)).is_integer())) {
+		for (auto & it : repl) {
+			if (e_replaced.op(0).is_equal(it.second) // The base is an allocated symbol or base of power
+			    || (is_a<power>(it.second) && e_replaced.op(0).is_equal(it.second.op(0)))) {
+				ex ratio; // We bind together two above cases
+				if (is_a<power>(it.second))
+					ratio = normal(e_replaced.op(1) / it.second.op(1));
+				else
+					ratio = e_replaced.op(1);
+				if (is_a<numeric>(ratio) && ex_to<numeric>(ratio).is_rational())  {
+					// Different powers can be treated as powers of the same basic equation
+					if (ex_to<numeric>(ratio).is_integer()) {
+						// If ratio is an integer then this is simply the power of the existing symbol.
+						//std::clog << e_replaced << " is a " << ratio << " power of " << it.first << std::endl;
+						return dynallocate<power>(it.first, ratio);
+					} else {
+						// otherwise we need to give the replacement pattern to change
+						// the previous expression...
+						ex es = dynallocate<symbol>();
+						ex Num = numer(ratio);
+						modifier.append(it.first == power(es, denom(ratio)));
+						//std::clog << e_replaced << " is power " << Num << " and "
+						//		  << it.first << " is power " << denom(ratio) << " of the common base "
+						//		  << pow(e_replaced.op(0), e_replaced.op(1)/Num) << std::endl;
+						// ... and  modify the replacement tables
+						rev_lookup.erase(it.second);
+						rev_lookup.insert({pow(e_replaced.op(0), e_replaced.op(1)/Num), es});
+						repl.erase(it.first);
+						repl.insert({es, pow(e_replaced.op(0), e_replaced.op(1)/Num)});
+						return dynallocate<power>(es, Num);
+					}
+				}
+			}
+		}
+		// There is no existing substitution, thus we are creating a new one.
+		// This needs to be done separately to treat possible occurrences of
+		// b = e_replaced.op(0) elsewhere in the expression as pow(b, 1).
+		ex degree = pow(e_replaced.op(1), _ex_1);
+		if (is_a<numeric>(degree) && ex_to<numeric>(degree).is_integer()) {
+			ex es = dynallocate<symbol>();
+			modifier.append(e_replaced.op(0) == power(es, degree));
+			repl.insert({es, e_replaced});
+			rev_lookup.insert({e_replaced, es});
+			return es;
 		}
 	}
 
@@ -2352,8 +2408,15 @@ ex mul::normal(exmap & repl, exmap & rev_lookup, lst & modifier) const
 ex power::normal(exmap & repl, exmap & rev_lookup, lst & modifier) const
 {
 	// Normalize basis and exponent (exponent gets reassembled)
+	int nmod = modifier.nops(); // To watch new modifiers to the replacement list
 	ex n_basis = ex_to<basic>(basis).normal(repl, rev_lookup, modifier);
+	for (int imod = nmod; imod < modifier.nops(); ++imod)
+		n_basis = n_basis.subs(modifier.op(imod), subs_options::no_pattern);
+
+	nmod = modifier.nops();
 	ex n_exponent = ex_to<basic>(exponent).normal(repl, rev_lookup, modifier);
+	for (int imod = nmod; imod < modifier.nops(); ++imod)
+		n_exponent = n_exponent.subs(modifier.op(imod), subs_options::no_pattern);
 	n_exponent = n_exponent.op(0) / n_exponent.op(1);
 
 	if (n_exponent.info(info_flags::integer)) {

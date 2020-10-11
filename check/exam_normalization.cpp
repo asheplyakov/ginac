@@ -255,6 +255,61 @@ static unsigned exam_exponent_law()
 	return result;
 }
 
+static unsigned exam_power_law()
+{
+	unsigned result = 0;
+	ex e, d;
+
+	lst bases = {x, pow(x, numeric(1,3)), exp(x), sin(x)}; // We run all check for power base of different kinds
+
+	for ( auto b : bases ) {
+
+		// simple case
+		e = 4*b-9;
+		e /= 2*sqrt(b)-3;
+		d = 2*sqrt(b)+3;
+		result += check_normal(e, d);
+
+		// Fractional powers
+		e = 4*pow(b, numeric(2,3))-9;
+		e /= 2*pow(b, numeric(1,3))-3;
+		d = 2*pow(b, numeric(1,3))+3;
+		result += check_normal(e, d);
+
+		// Different powers with the same base
+		e = 4*b-9*sqrt(b);
+		e /= 2*sqrt(b)-3*pow(b, numeric(1,4));
+		d = 2*sqrt(b)+3*pow(b, numeric(1,4));
+		result += check_normal(e, d);
+
+		// Non-numeric powers
+		e = 4*pow(b, 2*y)-9;
+		e /= 2*pow(b, y)-3;
+		d = 2*pow(b, y)+3;
+		result += check_normal(e, d);
+
+		// Non-numeric fractional powers
+		e = 4*pow(b, y)-9;
+		e /= 2*pow(b, y/2)-3;
+		d = 2*pow(b, y/2)+3;
+		result += check_normal(e, d);
+
+		// Different non-numeric powers
+		e = 4*pow(b, 2*y)-9*pow(b, 2*z);
+		e /= 2*pow(b, y)-3*pow(b, z);
+		d = 2*pow(b, y)+3*pow(b, z);
+		result += check_normal(e, d);
+
+		// Different non-numeric fractional powers
+		e = 4*pow(b, y)-9*pow(b, z);
+		e /= 2*pow(b, y/2)-3*pow(b, z/2);
+		d = 2*pow(b, y/2)+3*pow(b, z/2);
+		result += check_normal(e, d);
+	}
+
+	return result;
+}
+
 unsigned exam_normalization()
 {
 	unsigned result = 0;
@@ -267,6 +322,7 @@ unsigned exam_normalization()
 	result += exam_normal4(); cout << '.' << flush;
 	result += exam_content(); cout << '.' << flush;
 	result += exam_exponent_law(); cout << '.' << flush;
+	result += exam_power_law(); cout << '.' << flush;
 	
 	return result;
 }
