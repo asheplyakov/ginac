@@ -54,7 +54,7 @@
 //  * remove interfaces marked as deprecated
 #define GINAC_LT_CURRENT  11
 #define GINAC_LT_REVISION 0
-#define GINAC_LT_AGE      5
+#define GINAC_LT_AGE      0
 
 /*
  * GiNaC archive file version information.
