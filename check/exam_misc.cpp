@@ -255,6 +255,29 @@ static unsigned exam_subs_algebraic()
 	return result;
 }
 
+/* Test suitable cases of the exponent power law: (e^t)^s=e^(ts). */
+static unsigned exam_exponent_power_law()
+{
+	unsigned result = 0;
+	symbol x("x");
+	realsymbol s("s");
+	possymbol t("t");
+
+	exmap pwr_exp =
+		{ {pow(exp(x), 2), exp(2*x)},
+		  {pow(exp(s), t), exp(s*t)},
+		  {exp(x)*pow(exp(x),-1), 1} };
+
+	for (auto e : pwr_exp) {
+		if (! (e.first.is_equal(e.second)) ) {
+			clog << "power of exponent  " << e.first << " produces error.\n";
+			++result;
+		}
+	}
+
+	return result;
+}
+
 unsigned exam_misc()
 {
 	unsigned result = 0;
@@ -268,6 +291,7 @@ unsigned exam_misc()
 	result += exam_subs(); cout << '.' << flush;
 	result += exam_joris(); cout << '.' << flush;
 	result += exam_subs_algebraic(); cout << '.' << flush;
+	result += exam_exponent_power_law(); cout << '.' << flush;
 	
 	return result;
 }

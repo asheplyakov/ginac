@@ -128,6 +128,24 @@ static ex exp_conjugate(const ex & x)
 	return exp(x.conjugate());
 }
 
+static ex exp_power(const ex & x, const ex & a)
+{
+	/*
+	 * The power law (e^x)^a=e^(x*a) is used in two cases:
+	 * a) a is an integer and x may be complex;
+	 * b) both x and a are reals.
+	 * Negative a is excluded to keep automatic simplifications like exp(x)/exp(x)=1.
+	 */
+	if (a.info(info_flags::nonnegative)
+	    && (a.info(info_flags::integer) || (x.info(info_flags::real) && a.info(info_flags::real))))
+		return exp(x*a);
+	else if (a.info(info_flags::negative)
+	         && (a.info(info_flags::integer) || (x.info(info_flags::real) && a.info(info_flags::real))))
+		return power(exp(-x*a), _ex_1).hold();
+
+	return power(exp(x), a).hold();
+}
+
 REGISTER_FUNCTION(exp, eval_func(exp_eval).
                        evalf_func(exp_evalf).
                        expand_func(exp_expand).
@@ -135,6 +153,7 @@ REGISTER_FUNCTION(exp, eval_func(exp_eval).
                        real_part_func(exp_real_part).
                        imag_part_func(exp_imag_part).
                        conjugate_func(exp_conjugate).
+                       power_func(exp_power).
                        latex_name("\\exp"));
 
 //////////
