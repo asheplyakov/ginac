@@ -223,6 +223,38 @@ static unsigned exam_content()
 	return result;
 }
 
+static unsigned exam_exponent_law()
+{
+	unsigned result = 0;
+	ex e, d;
+
+	// simple case
+	e = exp(2*x)-1;
+	e /= exp(x)-1;
+	d = exp(x)+1;
+	result += check_normal(e, d);
+
+	// More involved with powers of two exponents
+	e = exp(15*x)+exp(12*x)+2*exp(10*x)+2*exp(7*x);
+	e /= exp(5*x)+exp(2*x);
+	d = pow(exp(5*x), 2) +2*exp(5*x);
+	result += check_normal(e, d);
+
+	lst bases = {
+		 5*exp(3*x)+7, // Powers of a single exponent
+		 5*exp(3*x)+7*exp(2*x), // Two different factors of a single variable
+		 5*exp(3*x)+7*exp(2*y) // Exponent with different variable
+	};
+
+	for (auto den : bases) {
+		e = pow(den, 3).expand();
+		e /= pow(den, 2).expand();
+		result += check_normal(e, den);
+	}
+
+	return result;
+}
+
 unsigned exam_normalization()
 {
 	unsigned result = 0;
@@ -234,6 +266,7 @@ unsigned exam_normalization()
 	result += exam_normal3(); cout << '.' << flush;
 	result += exam_normal4(); cout << '.' << flush;
 	result += exam_content(); cout << '.' << flush;
+	result += exam_exponent_law(); cout << '.' << flush;
 	
 	return result;
 }

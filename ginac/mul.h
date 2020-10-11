@@ -61,7 +61,7 @@ public:
 	ex imag_part() const override;
 	ex evalm() const override;
 	ex series(const relational & s, int order, unsigned options = 0) const override;
-	ex normal(exmap & repl, exmap & rev_lookup) const override;
+	ex normal(exmap & repl, exmap & rev_lookup, lst & modifier) const override;
 	numeric integer_content() const override;
 	ex smod(const numeric &xi) const override;
 	numeric max_coefficient() const override;

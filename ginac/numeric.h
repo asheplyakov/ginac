@@ -108,7 +108,7 @@ public:
 	ex eval() const override;
 	ex evalf() const override;
 	ex subs(const exmap & m, unsigned options = 0) const override { return subs_one_level(m, options); } // overwrites basic::subs() for performance reasons
-	ex normal(exmap & repl, exmap & rev_lookup) const override;
+	ex normal(exmap & repl, exmap & rev_lookup, lst & modifier) const override;
 	ex to_rational(exmap & repl) const override;
 	ex to_polynomial(exmap & repl) const override;
 	numeric integer_content() const override;

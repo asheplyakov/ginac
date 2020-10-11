@@ -54,7 +54,7 @@ public:
 	ex evalf() const override;
 	ex series(const relational & r, int order, unsigned options = 0) const override;
 	ex subs(const exmap & m, unsigned options = 0) const override;
-	ex normal(exmap & repl, exmap & rev_lookup) const override;
+	ex normal(exmap & repl, exmap & rev_lookup, lst & modifier) const override;
 	ex expand(unsigned options = 0) const override;
 	ex conjugate() const override;
 	ex real_part() const override;
