@@ -1,4 +1,4 @@
-/** @file match_bug.cpp
+/** @file exam_match.cpp
  *
  *  Check for bug in GiNaC::ex::match() described here:
  *  https://www.ginac.de/pipermail/ginac-devel/2006-April/000942.html */
@@ -117,7 +117,7 @@ static void expairseq_match_false_negative(int count)
 int main(int argc, char** argv)
 {
 	const int repetitions = 100;
-	std::cout << "checking for historical bugs in match()... " << std::flush;
+	std::cout << "examining historical bugs in match()... " << std::flush;
 	failed_match_have_side_effects();
 	match_false_negative();
 	expairseq_failed_match_no_side_effect(repetitions);

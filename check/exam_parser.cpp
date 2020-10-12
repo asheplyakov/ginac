@@ -28,10 +28,12 @@ using namespace GiNaC;
 #include <stdexcept>
 #include <string>
 
+using namespace std;
+
 // - a - b was misparsed as -a + b due to a bug in parser::parse_unary_expr()
-static int check1(std::ostream& err_str)
+static int check1(ostream& err_str)
 {
-	const std::string srep("-a-b");
+	const string srep("-a-b");
 	parser reader;
 	ex e = reader(srep);
 	ex a = reader.get_syms()["a"];
@@ -40,16 +42,16 @@ static int check1(std::ostream& err_str)
 	ex d = (e - g).expand();
 	if (!d.is_zero()) {
 		err_str << "\"" << srep << "\" was misparsed as \""
-			<< e << "\"" << std::endl;
+			<< e << "\"" << endl;
 		return 1;
 	}
 	return 0;
 }
 
 /// Parser was rejecting the valid expression '5 - (3*x)/10'.
-static int check2(std::ostream& err_str)
+static int check2(ostream& err_str)
 {
-	const std::string srep("5-(3*x)/10");
+	const string srep("5-(3*x)/10");
 	parser reader;
 	ex e = reader(srep);
 	ex x = reader.get_syms()["x"];
@@ -57,7 +59,7 @@ static int check2(std::ostream& err_str)
 	ex d = (e - g).expand();
 	if (!d.is_zero()) {
 		err_str << "\"" << srep << "\" was misparsed as \""
-			<< e << "\"" << std::endl;
+			<< e << "\"" << endl;
 		return 1;
 	}
 	return 0;
@@ -65,30 +67,30 @@ static int check2(std::ostream& err_str)
 
 /// parse_literal_expr forget to consume the token, so parser get
 /// very confused.
-static int check3(std::ostream& err_str)
+static int check3(ostream& err_str)
 {
-	const std::string srep("5-(2*I)/3");
+	const string srep("5-(2*I)/3");
 	parser reader;
 	ex e = reader(srep);
 	ex g = numeric(5) - (numeric(2)*I)/3;
 	ex d = (e - g).expand();
 	if (!d.is_zero()) {
 		err_str << "\"" << srep << "\" was misparsed as \""
-			<< e << "\"" << std::endl;
+			<< e << "\"" << endl;
 		return 1;
 	}
 	return 0;
 }
 
 /// parser happily accepted various junk like 'x^2()+1'
-static int check4(std::ostream& err_str)
+static int check4(ostream& err_str)
 {
-	const std::string junk("x^2()+1");
+	const string junk("x^2()+1");
 	parser reader;
 	ex e;
 	try {
 		e = reader(junk);
-		err_str << "parser accepts junk: \"" << junk << "\"" << std::endl;
+		err_str << "parser accepts junk: \"" << junk << "\"" << endl;
 		return 1;
 	} catch (parse_error& err) {
 		// Ok, parser rejects the nonsense.
@@ -98,18 +100,18 @@ static int check4(std::ostream& err_str)
 
 int main(int argc, char** argv)
 {
-	std::cout << "checking for parser bugs. " << std::flush;
-	std::ostringstream err_str;
+	cout << "examining old parser bugs" << flush;
+	ostringstream err_str;
 	int errors = 0;
-	errors += check1(err_str);
-	errors += check2(err_str);
-	errors += check3(err_str);
-	errors += check4(err_str);
+	errors += check1(err_str);  cout << '.' << flush;
+	errors += check2(err_str);  cout << '.' << flush;
+	errors += check3(err_str);  cout << '.' << flush;
+	errors += check4(err_str);  cout << '.' << flush;
 	if (errors) {
-		std::cout << "Yes, unfortunately:" << std::endl;
-		std::cout << err_str.str();
+		cout << "Yes, unfortunately:" << endl;
+		cout << err_str.str();
 	} else {
-		std::cout << "Not found. ";
+		cout << "Not found. ";
 	}
 	return errors;
 }

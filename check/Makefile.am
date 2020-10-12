@@ -3,38 +3,36 @@
 CHECKS = check_numeric \
 	 check_inifcns \
 	 check_matrices \
-	 check_lsolve 
+	 check_lsolve \
+	 check_cra
 
 EXAMS = exam_paranoia \
 	exam_heur_gcd \
-	match_bug \
-	parser_bugs \
-	exam_numeric_archive \
+	exam_match \
+	exam_parser \
 	exam_numeric \
-	exam_powerlaws  \
+	exam_powerlaws \
 	exam_inifcns \
 	exam_inifcns_nstdsums \
 	exam_inifcns_elliptic \
 	exam_differentiation  \
-	exam_polygcd  \
+	exam_polygcd \
 	exam_collect_common_factors \
-	exam_normalization  \
+	exam_normalization \
 	exam_sqrfree  \
 	exam_factor \
 	exam_pseries  \
 	exam_matrices  \
 	exam_lsolve  \
 	exam_indexed  \
-	exam_color  \
+	exam_color \
 	exam_clifford  \
 	exam_archive  \
 	exam_structure  \
 	exam_misc \
+	exam_pgcd \
 	exam_mod_gcd \
-	bugme_chinrem_gcd \
-	pgcd_relatively_prime_bug \
-	pgcd_infinite_loop \
-	exam_cra \
+	exam_chinrem_gcd \
 	exam_real_imag
 
 TIMES = time_dennyfliegner \
@@ -78,20 +76,20 @@ check_matrices_LDADD = ../ginac/libginac.la
 check_lsolve_SOURCES = check_lsolve.cpp genex.cpp
 check_lsolve_LDADD = ../ginac/libginac.la
 
+check_cra_SOURCES = check_cra.cpp
+check_cra_LDADD = ../ginac/libginac.la
+
 exam_paranoia_SOURCES = exam_paranoia.cpp
 exam_paranoia_LDADD = ../ginac/libginac.la
 
-exam_heur_gcd_SOURCES = heur_gcd_bug.cpp 
+exam_heur_gcd_SOURCES = exam_heur_gcd.cpp
 exam_heur_gcd_LDADD = ../ginac/libginac.la
 
-match_bug_SOURCES = match_bug.cpp error_report.h
-match_bug_LDADD = ../ginac/libginac.la
+exam_match_SOURCES = exam_match.cpp error_report.h
+exam_match_LDADD = ../ginac/libginac.la
 
-parser_bugs_SOURCES = parser_bugs.cpp
-parser_bugs_LDADD = ../ginac/libginac.la
-
-exam_numeric_archive_SOURCES = numeric_archive.cpp
-exam_numeric_archive_LDADD = ../ginac/libginac.la
+exam_parser_SOURCES = exam_parser.cpp
+exam_parser_LDADD = ../ginac/libginac.la
 
 exam_numeric_SOURCES = exam_numeric.cpp
 exam_numeric_LDADD = ../ginac/libginac.la
@@ -154,14 +152,17 @@ exam_structure_LDADD = ../ginac/libginac.la
 exam_misc_SOURCES = exam_misc.cpp
 exam_misc_LDADD = ../ginac/libginac.la
 
+exam_pgcd_SOURCES = exam_pgcd.cpp
+exam_pgcd_LDADD = ../ginac/libginac.la
+
 exam_mod_gcd_SOURCES = exam_mod_gcd.cpp
 exam_mod_gcd_LDADD = ../ginac/libginac.la
 
-exam_cra_SOURCES = exam_cra.cpp
-exam_cra_LDADD = ../ginac/libginac.la
-
 exam_real_imag_SOURCES = exam_real_imag.cpp
 exam_real_imag_LDADD = ../ginac/libginac.la
+
+exam_chinrem_gcd_SOURCES = exam_chinrem_gcd.cpp
+exam_chinrem_gcd_LDADD = ../ginac/libginac.la
 
 time_dennyfliegner_SOURCES = time_dennyfliegner.cpp \
 			     randomize_serials.cpp timer.cpp timer.h
@@ -261,15 +262,6 @@ time_uvar_gcd_LDADD = ../ginac/libginac.la
 time_parser_SOURCES = time_parser.cpp \
 		      randomize_serials.cpp timer.cpp timer.h
 time_parser_LDADD = ../ginac/libginac.la
-
-bugme_chinrem_gcd_SOURCES = bugme_chinrem_gcd.cpp
-bugme_chinrem_gcd_LDADD = ../ginac/libginac.la
-
-pgcd_relatively_prime_bug_SOURCES = pgcd_relatively_prime_bug.cpp
-pgcd_relatively_prime_bug_LDADD = ../ginac/libginac.la
-
-pgcd_infinite_loop_SOURCES =  pgcd_infinite_loop.cpp
-pgcd_infinite_loop_LDADD =  ../ginac/libginac.la
 
 AM_CPPFLAGS = -I$(srcdir)/../ginac -I../ginac -DIN_GINAC
 

@@ -1,4 +1,4 @@
-/** @file bugme_chinrem_gcd.cpp
+/** @file exam_chinrem_gcd.cpp
  *
  * A small program exposing historical bug in poly_cra function. */
 
@@ -68,7 +68,7 @@ static void integer_coeff_braindamage()
 
 int main(int argc, char** argv)
 {
-	cout << "checking for bugs in poly_cra() and friends " << flush;
+	cout << "examining in poly_cra() and friends " << flush;
 	check_poly_cra();
 	check_extract_integer_content();
 	integer_coeff_braindamage();

@@ -1,6 +1,6 @@
 /** @file heur_gcd_bug.cpp
  *
- *  heur_gcd_oops.cpp Check for a bug in heur_gcd().
+ *  exam_heur_gcd.cpp Check for a bug in heur_gcd().
  *
  *  heur_gcd() did not check if the arguments are integer polynomials
  *  (and did not convert them to integer polynomials), which lead to
@@ -32,7 +32,7 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-	cout << "checking if heur_gcd() can cope with rational polynomials. ";
+	cout << "examining if heur_gcd() can cope with rational polynomials. ";
 	const symbol x("x");
 	const ex _ex1(1);
 	ex a1 = x + numeric(5, 4);

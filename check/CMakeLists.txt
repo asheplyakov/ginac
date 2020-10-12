@@ -4,12 +4,11 @@ set(ginac_tests
 	check_inifcns
 	check_matrices
 	check_lsolve
-	heur_gcd_bug
+	check_cra
 	exam_paranoia
 	exam_heur_gcd
-	match_bug
-	parser_bugs
-	exam_numeric_archive
+	exam_match
+	exam_parser
 	exam_numeric
 	exam_powerlaws
 	exam_inifcns
@@ -30,12 +29,10 @@ set(ginac_tests
 	exam_archive
 	exam_structure
 	exam_misc
+	exam_pgcd
 	exam_mod_gcd
-	exam_cra
 	exam_real_imag
-	bugme_chinrem_gcd
-	pgcd_relatively_prime_bug
-	pgcd_infinite_loop)
+	exam_chinrem_gcd)
 
 set(ginac_timings
 	time_dennyfliegner
@@ -83,8 +80,6 @@ endmacro()
 
 set(check_matrices_extra_src genex.cpp)
 set(check_lsolve_extra_src genex.cpp)
-set(exam_heur_gcd_sources heur_gcd_bug.cpp)
-set(exam_numeric_archive_sources numeric_archive.cpp)
 
 foreach(tst ${ginac_tests})
 	add_ginac_test(${tst})

@@ -27,12 +27,13 @@ using namespace GiNaC;
 #include <iostream>
 using namespace std;
 
+#include <cln/cln.h>
+
+
 unsigned exam_archive()
 {
 	unsigned result = 0;
 	
-	cout << "examining archiving system" << flush;
-
 	symbol x("x"), y("y"), mu("mu"), dim("dim", "\\Delta");
 	ex e, f;
 
@@ -76,7 +77,49 @@ unsigned exam_archive()
 	return result;
 }
 
+/** numeric::archive used to fail if the real part of a complex number
+ *  is a rational number and the imaginary part is a floating point one. */
+unsigned numeric_complex_bug()
+{
+	using namespace cln;
+	struct archive_unarchive_check
+	{
+		unsigned operator()(const cl_N& n) const
+		{
+			ex e = numeric(n);
+			archive ar;
+			ar.archive_ex(e, "test");
+			ex check = ar.unarchive_ex(lst{}, "test");
+			if (!check.is_equal(e)) {
+				clog << __FILE__ << ':' << __LINE__ << ": expected: " << e << ", got " << check << endl;
+				return 1;
+			}
+			return 0;
+		}
+	} checker;
+	unsigned result = 0;
+	const cl_I one(1);
+	const cl_R three_fp = cl_float(3.0);
+	std::vector<cl_N> numbers = {
+		complex(one, one),
+		complex(one, three_fp),
+		complex(three_fp, one),
+		complex(three_fp, three_fp)
+	};
+	for (auto & n : numbers) {
+		result += checker(n);
+	}
+	return result;
+}
+
 int main(int argc, char** argv)
 {
-	return exam_archive();
+	unsigned result = 0;
+
+	cout << "examining archiving system" << flush;
+
+	result += exam_archive();  cout << '.' << flush;
+	result += numeric_complex_bug();  cout << '.' << flush;
+
+	return result;
 }
