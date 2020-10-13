@@ -10,11 +10,11 @@
  *  Some remarks:
  *
  *    - All formulae used can be looked up in the following publication:
- *      [WW] Numerical evaluation of iterated integrals related to elliptic Feynman integrals, M.Walden, S.Weinzierl, arXiv:2010.xxxxx
+ *      [WW] Numerical evaluation of iterated integrals related to elliptic Feynman integrals, M.Walden, S.Weinzierl, arXiv:2010.05271
  *
  *    - When these routines and methods are used for scientific work that leads to publication in a scientific journal, 
  *      please refer to this program as : 
- *       M.Walden, S.Weinzierl, "Numerical evaluation of iterated integrals related to elliptic Feynman integrals", arXiv:2010.xxxxx
+ *       M.Walden, S.Weinzierl, "Numerical evaluation of iterated integrals related to elliptic Feynman integrals", arXiv:2010.05271
  *
  *    - As these routines build on the core part of GiNaC, it is also polite to acknowledge
  *       C. Bauer, A. Frink, R. Kreckel, "Introduction to the GiNaC Framework for Symbolic Computation within the C++ Programming Language", 

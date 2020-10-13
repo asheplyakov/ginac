@@ -6226,7 +6226,7 @@ of @math{E_{k,N,a,b,K}(\tau)}, @math{h_{k,N,r,s}(\tau)} or @math{P} to the speci
 Useful publications:
 
 @cite{Numerical evaluation of iterated integrals related to elliptic Feynman integrals}, 
-M.Walden, S.Weinzierl, arXiv:2010.xxxxx
+M.Walden, S.Weinzierl, arXiv:2010.05271
 
 @node Complex expressions, Solving linear systems of equations, Iterated integrals, Methods and functions
 @c    node-name, next, previous, up
