@@ -1,5 +1,13 @@
 This file records noteworthy changes.
 
+1.8.0 (14 October 2020)
+* New routines for the numerical evaluation of iterated integrals like
+  elliptic multiple polylogarithms or iterated integrals of modular forms.
+* Stronger normalization methods for expressions with powers. Where this
+  is safe, GiNaC now tries replacing various kinds of powers in order to
+  find and cancel common subexpressions.
+* Improved CMake build.
+
 1.7.11 (3 August 2020)
 * Fix elusive bugs in factor() and in expand().
 
