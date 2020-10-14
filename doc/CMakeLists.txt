@@ -26,7 +26,7 @@ macro(add_info_file thename)
 	add_custom_target(${thename}_html DEPENDS ${${thename}_HTML})
 	add_dependencies(info ${thename}_info)
 	add_dependencies(html ${thename}_html)
-	install(FILES ${${thename}_INFO} DESTINATION "${SHARE_INSTALL_PREFIX}/info")
+	install(FILES ${${thename}_INFO} DESTINATION "${CMAKE_INSTALL_PREFIX}/share/info")
 endmacro()
 
 macro(pdflatex_process texfile)
