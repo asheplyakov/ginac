@@ -1,10 +1,5 @@
 
-set(ginac_tests
-	check_numeric
-	check_inifcns
-	check_matrices
-	check_lsolve
-	check_cra
+set(ginac_exams
 	exam_paranoia
 	exam_heur_gcd
 	exam_match
@@ -33,6 +28,13 @@ set(ginac_tests
 	exam_mod_gcd
 	exam_real_imag
 	exam_chinrem_gcd)
+
+set(ginac_checks
+	check_numeric
+	check_inifcns
+	check_matrices
+	check_lsolve
+	check_cra)
 
 set(ginac_timings
 	time_dennyfliegner
@@ -81,8 +83,12 @@ endmacro()
 set(check_matrices_extra_src genex.cpp)
 set(check_lsolve_extra_src genex.cpp)
 
-foreach(tst ${ginac_tests})
-	add_ginac_test(${tst})
+foreach(exm ${ginac_exams})
+	add_ginac_test(${exm})
+endforeach()
+
+foreach(chk ${ginac_checks})
+	add_ginac_test(${chk})
 endforeach()
 
 foreach(tmr ${ginac_timings})

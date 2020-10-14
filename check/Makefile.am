@@ -1,11 +1,5 @@
 ## Process this file with automake to produce Makefile.in
 
-CHECKS = check_numeric \
-	 check_inifcns \
-	 check_matrices \
-	 check_lsolve \
-	 check_cra
-
 EXAMS = exam_paranoia \
 	exam_heur_gcd \
 	exam_match \
@@ -35,6 +29,12 @@ EXAMS = exam_paranoia \
 	exam_chinrem_gcd \
 	exam_real_imag
 
+CHECKS = check_numeric \
+	 check_inifcns \
+	 check_matrices \
+	 check_lsolve \
+	 check_cra
+
 TIMES = time_dennyfliegner \
 	time_gammaseries \
 	time_vandermonde \
@@ -61,23 +61,8 @@ TIMES = time_dennyfliegner \
 	time_uvar_gcd \
 	time_parser
 
-TESTS = $(CHECKS) $(EXAMS) $(TIMES)
-check_PROGRAMS = $(CHECKS) $(EXAMS) $(TIMES)
-
-check_numeric_SOURCES = check_numeric.cpp 
-check_numeric_LDADD = ../ginac/libginac.la
-
-check_inifcns_SOURCES = check_inifcns.cpp
-check_inifcns_LDADD = ../ginac/libginac.la
-
-check_matrices_SOURCES = check_matrices.cpp genex.cpp
-check_matrices_LDADD = ../ginac/libginac.la
-
-check_lsolve_SOURCES = check_lsolve.cpp genex.cpp
-check_lsolve_LDADD = ../ginac/libginac.la
-
-check_cra_SOURCES = check_cra.cpp
-check_cra_LDADD = ../ginac/libginac.la
+TESTS = $(EXAMS) $(CHECKS) $(TIMES)
+check_PROGRAMS = $(EXAMS) $(CHECKS) $(TIMES)
 
 exam_paranoia_SOURCES = exam_paranoia.cpp
 exam_paranoia_LDADD = ../ginac/libginac.la
@@ -163,6 +148,21 @@ exam_real_imag_LDADD = ../ginac/libginac.la
 
 exam_chinrem_gcd_SOURCES = exam_chinrem_gcd.cpp
 exam_chinrem_gcd_LDADD = ../ginac/libginac.la
+
+check_numeric_SOURCES = check_numeric.cpp
+check_numeric_LDADD = ../ginac/libginac.la
+
+check_inifcns_SOURCES = check_inifcns.cpp
+check_inifcns_LDADD = ../ginac/libginac.la
+
+check_matrices_SOURCES = check_matrices.cpp genex.cpp
+check_matrices_LDADD = ../ginac/libginac.la
+
+check_lsolve_SOURCES = check_lsolve.cpp genex.cpp
+check_lsolve_LDADD = ../ginac/libginac.la
+
+check_cra_SOURCES = check_cra.cpp
+check_cra_LDADD = ../ginac/libginac.la
 
 time_dennyfliegner_SOURCES = time_dennyfliegner.cpp \
 			     randomize_serials.cpp timer.cpp timer.h
