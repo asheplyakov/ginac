@@ -67,210 +67,10 @@ multinomial_coefficient(const std::vector<unsigned> & p)
 	return factorial(n).div(d);
 }
 
-//////////
-// flyweight chest of numbers is initialized here:
-//////////
 
 /** How many static objects were created?  Only the first one must create
  *  the static flyweights on the heap. */
 int library_init::count = 0;
-
-// static numeric -120
-const numeric *_num_120_p;
-const ex _ex_120 = _ex_120;
-
-// static numeric -60
-const numeric *_num_60_p;
-const ex _ex_60 = _ex_60;
-
-// static numeric -48
-const numeric *_num_48_p;
-const ex _ex_48 = _ex_48;
-
-// static numeric -30
-const numeric *_num_30_p;
-const ex _ex_30 = _ex_30;
-
-// static numeric -25
-const numeric *_num_25_p;
-const ex _ex_25 = _ex_25;
-
-// static numeric -24
-const numeric *_num_24_p;
-const ex _ex_24 = _ex_24;
-
-// static numeric -20
-const numeric *_num_20_p;
-const ex _ex_20 = _ex_20;
-
-// static numeric -18
-const numeric *_num_18_p;
-const ex _ex_18 = _ex_18;
-
-// static numeric -15
-const numeric *_num_15_p;
-const ex _ex_15 = _ex_15;
-
-// static numeric -12
-const numeric *_num_12_p;
-const ex _ex_12 = _ex_12;
-
-// static numeric -11
-const numeric *_num_11_p;
-const ex _ex_11 = _ex_11;
-
-// static numeric -10
-const numeric *_num_10_p;
-const ex _ex_10 = _ex_10;
-
-// static numeric -9
-const numeric *_num_9_p;
-const ex _ex_9 = _ex_9;
-
-// static numeric -8
-const numeric *_num_8_p;
-const ex _ex_8 = _ex_8;
-
-// static numeric -7
-const numeric *_num_7_p;
-const ex _ex_7 = _ex_7;
-
-// static numeric -6
-const numeric *_num_6_p;
-const ex _ex_6 = _ex_6;
-
-// static numeric -5
-const numeric *_num_5_p;
-const ex _ex_5 = _ex_5;
-
-// static numeric -4
-const numeric *_num_4_p;
-const ex _ex_4 = _ex_4;
-
-// static numeric -3
-const numeric *_num_3_p;
-const ex _ex_3 = _ex_3;
-
-// static numeric -2
-const numeric *_num_2_p;
-const ex _ex_2 = _ex_2;
-
-// static numeric -1
-const numeric *_num_1_p;
-const ex _ex_1 = _ex_1;
-
-// static numeric -1/2
-const numeric *_num_1_2_p;
-const ex _ex_1_2= _ex_1_2;
-
-// static numeric -1/3
-const numeric *_num_1_3_p;
-const ex _ex_1_3= _ex_1_3;
-
-// static numeric -1/4
-const numeric *_num_1_4_p;
-const ex _ex_1_4= _ex_1_4;
-
-// static numeric 0
-const numeric *_num0_p;
-const basic *_num0_bp;
-const ex _ex0 = _ex0;
-
-// static numeric 1/4
-const numeric *_num1_4_p;
-const ex _ex1_4 = _ex1_4;
-
-// static numeric 1/3
-const numeric *_num1_3_p;
-const ex _ex1_3 = _ex1_3;
-
-// static numeric 1/2
-const numeric *_num1_2_p;
-const ex _ex1_2 = _ex1_2;
-
-// static numeric 1
-const numeric *_num1_p;
-const ex _ex1 = _ex1;
-
-// static numeric 2
-const numeric *_num2_p;
-const ex _ex2 = _ex2;
-
-// static numeric 3
-const numeric *_num3_p;
-const ex _ex3 = _ex3;
-
-// static numeric 4
-const numeric *_num4_p;
-const ex _ex4 = _ex4;
-
-// static numeric 5
-const numeric *_num5_p;
-const ex _ex5 = _ex5;
-
-// static numeric 6
-const numeric *_num6_p;
-const ex _ex6 = _ex6;
-
-// static numeric 7
-const numeric *_num7_p;
-const ex _ex7 = _ex7;
-
-// static numeric 8
-const numeric *_num8_p;
-const ex _ex8 = _ex8;
-
-// static numeric 9
-const numeric *_num9_p;
-const ex _ex9 = _ex9;
-
-// static numeric 10
-const numeric *_num10_p;
-const ex _ex10 = _ex10;
-
-// static numeric 11
-const numeric *_num11_p;
-const ex _ex11 = _ex11;
-
-// static numeric 12
-const numeric *_num12_p;
-const ex _ex12 = _ex12;
-
-// static numeric 15
-const numeric *_num15_p;
-const ex _ex15 = _ex15;
-
-// static numeric 18
-const numeric *_num18_p;
-const ex _ex18 = _ex18;
-
-// static numeric 20
-const numeric *_num20_p;
-const ex _ex20 = _ex20;
-
-// static numeric 24
-const numeric *_num24_p;
-const ex _ex24 = _ex24;
-
-// static numeric 25
-const numeric *_num25_p;
-const ex _ex25 = _ex25;
-
-// static numeric 30
-const numeric *_num30_p;
-const ex _ex30 = _ex30;
-
-// static numeric 48
-const numeric *_num48_p;
-const ex _ex48 = _ex48;
-
-// static numeric 60
-const numeric *_num60_p;
-const ex _ex60 = _ex60;
-
-// static numeric 120
-const numeric *_num120_p;
-const ex _ex120 = _ex120;
 
 /** Ctor of static initialization helpers.  The fist call to this is going
  *  to initialize the library, the others do nothing. */
@@ -458,6 +258,211 @@ library_init::~library_init()
 }
 
 void library_init::init_unarchivers() { }
+
+
+//////////
+// Flyweight chest of numbers is re-initialized here. Note that this works
+// because the numeric* have been dynallocated by the library_init ctor before
+// (with the first module that has a static library_init object), so the
+// assignments here only increment their refcounts.
+//////////
+
+// static numeric -120
+const numeric *_num_120_p;
+const ex _ex_120 = ex(*_num_120_p);
+
+// static numeric -60
+const numeric *_num_60_p;
+const ex _ex_60 = ex(*_num_60_p);
+
+// static numeric -48
+const numeric *_num_48_p;
+const ex _ex_48 = ex(*_num_48_p);
+
+// static numeric -30
+const numeric *_num_30_p;
+const ex _ex_30 = ex(*_num_30_p);
+
+// static numeric -25
+const numeric *_num_25_p;
+const ex _ex_25 = ex(*_num_25_p);
+
+// static numeric -24
+const numeric *_num_24_p;
+const ex _ex_24 = ex(*_num_24_p);
+
+// static numeric -20
+const numeric *_num_20_p;
+const ex _ex_20 = ex(*_num_20_p);
+
+// static numeric -18
+const numeric *_num_18_p;
+const ex _ex_18 = ex(*_num_18_p);
+
+// static numeric -15
+const numeric *_num_15_p;
+const ex _ex_15 = ex(*_num_15_p);
+
+// static numeric -12
+const numeric *_num_12_p;
+const ex _ex_12 = ex(*_num_12_p);
+
+// static numeric -11
+const numeric *_num_11_p;
+const ex _ex_11 = ex(*_num_11_p);
+
+// static numeric -10
+const numeric *_num_10_p;
+const ex _ex_10 = ex(*_num_10_p);
+
+// static numeric -9
+const numeric *_num_9_p;
+const ex _ex_9 = ex(*_num_9_p);
+
+// static numeric -8
+const numeric *_num_8_p;
+const ex _ex_8 = ex(*_num_8_p);
+
+// static numeric -7
+const numeric *_num_7_p;
+const ex _ex_7 = ex(*_num_7_p);
+
+// static numeric -6
+const numeric *_num_6_p;
+const ex _ex_6 = ex(*_num_6_p);
+
+// static numeric -5
+const numeric *_num_5_p;
+const ex _ex_5 = ex(*_num_5_p);
+
+// static numeric -4
+const numeric *_num_4_p;
+const ex _ex_4 = ex(*_num_4_p);
+
+// static numeric -3
+const numeric *_num_3_p;
+const ex _ex_3 = ex(*_num_3_p);
+
+// static numeric -2
+const numeric *_num_2_p;
+const ex _ex_2 = ex(*_num_2_p);
+
+// static numeric -1
+const numeric *_num_1_p;
+const ex _ex_1 = ex(*_num_1_p);
+
+// static numeric -1/2
+const numeric *_num_1_2_p;
+const ex _ex_1_2= ex(*_num_1_2_p);
+
+// static numeric -1/3
+const numeric *_num_1_3_p;
+const ex _ex_1_3= ex(*_num_1_3_p);
+
+// static numeric -1/4
+const numeric *_num_1_4_p;
+const ex _ex_1_4= ex(*_num_1_4_p);
+
+// static numeric 0
+const numeric *_num0_p;
+const basic *_num0_bp;
+const ex _ex0 = ex(*_num0_p);
+
+// static numeric 1/4
+const numeric *_num1_4_p;
+const ex _ex1_4 = ex(*_num1_4_p);
+
+// static numeric 1/3
+const numeric *_num1_3_p;
+const ex _ex1_3 = ex(*_num1_3_p);
+
+// static numeric 1/2
+const numeric *_num1_2_p;
+const ex _ex1_2 = ex(*_num1_2_p);
+
+// static numeric 1
+const numeric *_num1_p;
+const ex _ex1 = ex(*_num1_p);
+
+// static numeric 2
+const numeric *_num2_p;
+const ex _ex2 = ex(*_num2_p);
+
+// static numeric 3
+const numeric *_num3_p;
+const ex _ex3 = ex(*_num3_p);
+
+// static numeric 4
+const numeric *_num4_p;
+const ex _ex4 = ex(*_num4_p);
+
+// static numeric 5
+const numeric *_num5_p;
+const ex _ex5 = ex(*_num5_p);
+
+// static numeric 6
+const numeric *_num6_p;
+const ex _ex6 = ex(*_num6_p);
+
+// static numeric 7
+const numeric *_num7_p;
+const ex _ex7 = ex(*_num7_p);
+
+// static numeric 8
+const numeric *_num8_p;
+const ex _ex8 = ex(*_num8_p);
+
+// static numeric 9
+const numeric *_num9_p;
+const ex _ex9 = ex(*_num9_p);
+
+// static numeric 10
+const numeric *_num10_p;
+const ex _ex10 = ex(*_num10_p);
+
+// static numeric 11
+const numeric *_num11_p;
+const ex _ex11 = ex(*_num11_p);
+
+// static numeric 12
+const numeric *_num12_p;
+const ex _ex12 = ex(*_num12_p);
+
+// static numeric 15
+const numeric *_num15_p;
+const ex _ex15 = ex(*_num15_p);
+
+// static numeric 18
+const numeric *_num18_p;
+const ex _ex18 = ex(*_num18_p);
+
+// static numeric 20
+const numeric *_num20_p;
+const ex _ex20 = ex(*_num20_p);
+
+// static numeric 24
+const numeric *_num24_p;
+const ex _ex24 = ex(*_num24_p);
+
+// static numeric 25
+const numeric *_num25_p;
+const ex _ex25 = ex(*_num25_p);
+
+// static numeric 30
+const numeric *_num30_p;
+const ex _ex30 = ex(*_num30_p);
+
+// static numeric 48
+const numeric *_num48_p;
+const ex _ex48 = ex(*_num48_p);
+
+// static numeric 60
+const numeric *_num60_p;
+const ex _ex60 = ex(*_num60_p);
+
+// static numeric 120
+const numeric *_num120_p;
+const ex _ex120 = ex(*_num120_p);
 
 // comment skeleton for header files
 
