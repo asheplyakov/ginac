@@ -397,7 +397,7 @@ private:
 	// Generates all distinct permutations of a multiset.
 	// (Based on Aaron Williams' algorithm 1 from "Loopless Generation of
 	// Multiset Permutations using a Constant Number of Variables by Prefix
-	// Shifts." <http://webhome.csc.uvic.ca/~haron/CoolMulti.pdf>)
+	// Shifts." <https://dl.acm.org/doi/pdf/10.5555/1496770.1496877>)
 	struct coolmulti {
 		// element of singly linked list
 		struct element {

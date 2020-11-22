@@ -14,8 +14,7 @@ The pkg-config utility is required for configuration, it can be downloaded
 from <http://pkg-config.freedesktop.org/>. Also, Python 3 is required.
 
 To build the GiNaC tutorial and reference manual the doxygen utility
-(it can be downloaded from http://www.stack.nl/~dimitri/doxygen) and
-TeX are necessary.
+(it can be downloaded from https://www.doxygen.nl/) and TeX are necessary.
 
 Known to work with:
  - Linux on x86 and x86_64 using

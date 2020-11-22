@@ -140,7 +140,7 @@ void power::do_print_latex(const print_latex & c, unsigned level) const
 static void print_sym_pow(const print_context & c, const symbol &x, int exp)
 {
 	// Optimal output of integer powers of symbols to aid compiler CSE.
-	// C.f. ISO/IEC 14882:2011, section 1.9 [intro execution], paragraph 15
+	// C.f. ISO/IEC 14882:2011, section 1.9 [intro.execution], paragraph 15
 	// to learn why such a parenthesation is really necessary.
 	if (exp == 1) {
 		x.print(c);

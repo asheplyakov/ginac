@@ -11,8 +11,8 @@ PREREQUISITES
    skipped if you don't intend to use ginsh (i.e. you need the GiNaC library
    for compiling another piece of a software).
 7. (optional) To build the GiNaC tutorial and reference manual the doxygen
-   utility (it can be downloaded from http://www.stack.nl/~dimitri/doxygen)
-   and TeX are necessary.
+   utility (it can be downloaded from https://www.doxygen.nl/) and TeX are
+   necessary.
 
 INSTALLATION
 ============

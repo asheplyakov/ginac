@@ -12,7 +12,7 @@
  *  This program is based on work by
  *      Isabella Bierenbaum <bierenbaum@thep.physik.uni-mainz.de> and
  *      Dirk Kreimer <dkreimer@bu.edu>.
- *  For details, please see <http://www.arXiv.org/abs/hep-th/0111192>.
+ *  For details, please see <https://www.arXiv.org/abs/hep-th/0111192>.
  */
 
 /*

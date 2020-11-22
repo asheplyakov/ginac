@@ -43,7 +43,7 @@ namespace GiNaC {
  *  of this class in every object file that makes use of our flyweights in
  *  order to guarantee proper initialization.  Hence we put it into this
  *  file which is included by every relevant file anyways.  This is modeled
- *  after section 27.4.2.1.6 of the C++ standard, where cout and friends are
+ *  after section [ios::Init] of the C++ standard, where cout and friends are
  *  set up.
  *
  *  @see utils.cpp */

@@ -28,7 +28,7 @@
  * The value of g is taken to be equal to the order N.
  *
  * More details can be found at Wikipedia:
- * http://en.wikipedia.org/wiki/Lanczos_approximation.
+ * https://en.wikipedia.org/wiki/Lanczos_approximation.
  *
  * (C) 2006 Chris Dams
  *

@@ -4855,7 +4855,7 @@ presented this would be impractical.
 One solution to this dilemma is the @dfn{Visitor} design pattern,
 which is implemented in GiNaC (actually, Robert Martin's Acyclic Visitor
 variation, described in detail in
-@uref{http://objectmentor.com/publications/acv.pdf}). Instead of adding
+@uref{https://condor.depaul.edu/dmumaugh/OOT/Design-Principles/acv.pdf}). Instead of adding
 virtual functions to the class hierarchy to implement operations, GiNaC
 provides a single "bouncing" method @code{accept()} that takes an instance
 of a special @code{visitor} class and redirects execution to the one
@@ -8663,9 +8663,9 @@ inserted.  But it may be useful to remember that this is not what
 happens.  Knowing this will enable you to write much more efficient
 code.  If you still have an uncertain feeling with copy-on-write
 semantics, we recommend you have a look at the
-@uref{http://www.parashift.com/c++-faq-lite/, C++-FAQ lite} by
-Marshall Cline.  Chapter 16 covers this issue and presents an
-implementation which is pretty close to the one in GiNaC.
+@uref{https://isocpp.org/faq, C++-FAQ's} chapter on memory management.
+It covers this issue and presents an implementation which is pretty
+close to the one in GiNaC.
 
 
 @node Internal representation of products and sums, Package tools, Expressions are reference counted, Internal structures
