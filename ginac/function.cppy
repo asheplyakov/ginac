@@ -225,14 +225,6 @@ function::function(unsigned ser) : serial(ser)
 {
 }
 
-// the following lines have been generated for max. @maxargs@ parameters
-+++ for N in range(1, maxargs + 1):
-function::function(unsigned ser, @seq('const ex & param%(n)d', N)@)
-	: exprseq{@seq('param%(n)d', N)@}, serial(ser)
-{
-}
----
-
 function::function(unsigned ser, const exprseq & es) : exprseq(es), serial(ser)
 {
 
