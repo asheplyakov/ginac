@@ -11,7 +11,8 @@ use the same compiler you compiled CLN with because of differing
 name-mangling schemes.
 
 The pkg-config utility is required for configuration, it can be downloaded
-from <http://pkg-config.freedesktop.org/>. Also, Python 3 is required.
+from <http://pkg-config.freedesktop.org/>. If you want to build GiNaC
+interactive shell Python 3 is required.
 
 To build the GiNaC tutorial and reference manual the doxygen utility
 (it can be downloaded from https://www.doxygen.nl/) and TeX are necessary.

@@ -18,7 +18,7 @@ CLEANFILES = $(TXT) $(HTML)
 
 EXTRA_DIST = $(EXFILES) CMakeLists.txt
 
-AM_CPPFLAGS = -I$(srcdir)/../../ginac -I../../ginac -DIN_GINAC
+AM_CPPFLAGS = -I$(srcdir)/../../ginac -I../../ginac -I$(top_srcdir)/3rdparty/mapbox/variant/include -DIN_GINAC
 
 noinst_PROGRAMS = archive1 \
 		  compile1 \

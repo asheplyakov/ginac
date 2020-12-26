@@ -59,7 +59,7 @@ polynomial/smod_helpers.h \
 polynomial/debug.h
 
 libginac_la_LDFLAGS = -version-info $(LT_VERSION_INFO)
-libginac_la_CPPFLAGS = -DLIBEXECDIR='"$(libexecdir)/"'
+libginac_la_CPPFLAGS = -DLIBEXECDIR='"$(libexecdir)/"' -I$(top_srcdir)/3rdparty/mapbox/variant/include
 libginac_la_LIBADD = $(DL_LIBS)
 ginacincludedir = $(includedir)/ginac
 ginacinclude_HEADERS = ginac.h add.h archive.h assertion.h basic.h class_info.h \
@@ -71,14 +71,10 @@ ginacinclude_HEADERS = ginac.h add.h archive.h assertion.h basic.h class_info.h 
   parser/parser.h \
   parser/parse_context.h
 
-EXTRA_DIST = function.py function.hppy function.cppy CMakeLists.txt
+mapboxincludedir = $(includedir)/mapbox
+mapboxinclude_HEADERS = \
+			../3rdparty/mapbox/variant/include/mapbox/variant.hpp \
+			../3rdparty/mapbox/variant/include/mapbox/recursive_wrapper.hpp \
+			../3rdparty/mapbox/variant/include/mapbox/variant_visitor.hpp
 
-BUILT_SOURCES = function.cpp function.h
-EXTRA_DIST += function.cpp function.h
-
-$(srcdir)/function.cpp: function.cppy function.py
-	$(PYTHON) $(srcdir)/function.py -o $@ $<
-
-$(srcdir)/function.h: function.hppy function.py
-	$(PYTHON) $(srcdir)/function.py -o $@ $<
-
+EXTRA_DIST = CMakeLists.txt

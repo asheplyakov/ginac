@@ -9,7 +9,7 @@ if CONFIG_EXCOMPILER
 libexec_SCRIPTS += ginac-excompiler
 endif
 
-AM_CPPFLAGS = -I$(srcdir)/../ginac -I../ginac -DIN_GINAC
+AM_CPPFLAGS = -I$(srcdir)/../ginac -I../ginac -I$(top_srcdir)/3rdparty/mapbox/variant/include -DIN_GINAC
 
 man_MANS = viewgar.1
 

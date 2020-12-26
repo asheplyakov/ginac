@@ -1,0 +1,3 @@
+[submodule "3rdparty/mapbox/variant"]
+	path = 3rdparty/mapbox/variant
+	url = git://github.com/mapbox/variant

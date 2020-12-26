@@ -3,10 +3,6 @@
  *  Implementation of class of symbolic functions. */
 
 /*
- *  This file was generated automatically by function.py.
- *  Please do not modify it directly, edit function.cppy instead!
- *  function.py options: maxargs=@maxargs@
- *
  *  GiNaC Copyright (C) 1999-2021 Johannes Gutenberg University Mainz, Germany
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -37,6 +33,7 @@
 #include "utils.h"
 #include "hash_seed.h"
 #include "remember.h"
+#include "relational.h"
 
 #include <iostream>
 #include <limits>
@@ -45,6 +42,129 @@
 #include <string>
 
 namespace GiNaC {
+template<typename F, typename V>
+static inline auto visit(F&& f, V&& v)
+#if __cplusplus < 201403L
+-> decltype(::mapbox::util::apply_visitor(std::forward<F>(f), std::forward<V>(v)))
+#endif
+{
+	return ::mapbox::util::apply_visitor(std::forward<F>(f), std::forward<V>(v));
+}
+
+template<int N, typename A>
+static inline typename A::const_reference get(const A& array) {
+	return array[N];
+}
+
+template<typename F, typename... Rest> struct adjusted_arity {
+	static constexpr unsigned value = get_arity_s<F>::value - sizeof...(Rest);
+};
+
+template<typename F, typename... Rest> struct genseq2 : genseq<adjusted_arity<F, Rest...>::value> { };
+template<typename F> struct return_type;
+template<typename R, typename... Args> struct return_type<R(Args...)> {
+	using type = R;
+};
+template<typename R, typename... Args> struct return_type<R(*)(Args...)> {
+	using type = R;
+};
+
+/* Unpacks arguments and calls a function
+ * f, {1, 2} -> f(1, 2)
+ * g, {1, 2, 3}, 'a', "b" -> g(1, 2, 3, 'a', "b")
+ */
+template<bool PassExvector> struct exvector_args_dispatcher {
+	template<typename F, typename C, int... S, typename... Rest>
+	static inline auto do_call(const F& func, const C& args, seq<S...>, Rest&&... rest)
+#if __cplusplus < 201402L
+	-> typename return_type<F>::type
+#endif
+	{
+		return func(get<S>(args)..., std::forward<Rest>(rest)...);
+	}
+
+	template<typename F, typename ArgT, typename... Rest>
+	static inline auto call(F fptr, const ArgT& args, Rest&&... rest)
+#if __cplusplus < 201402L
+	-> typename return_type<F>::type
+#endif
+	{
+		return do_call(fptr, args, typename genseq2<F, Rest...>::type{}, std::forward<Rest>(rest)...);
+	}
+};
+
+/* Calls function taking exvector arguments
+ * f, {1, 2} -> f({1, 2})
+ * g, {1, 2, 3}, 'a', "b" -> g({1, 2, 3}, 'a', "b")
+ */
+template<> struct exvector_args_dispatcher<true> {
+	/** Calls a function taking const exvector&, const Rest&... */
+	template<typename F, typename ArgT, typename... Rest>
+	static inline auto call(F fptr, const ArgT& args, Rest&&... rest)
+#if __cplusplus < 201402L
+	-> typename return_type<F>::type
+#endif
+	{
+		return fptr(args, std::forward<Rest>(rest)...);
+	}
+};
+
+template<typename F, typename Args, typename... Rest>
+static inline auto funcp_call(F fptr, const Args& args, Rest&&... rest)
+#if __cplusplus < 201402L
+	-> typename return_type<F>::type
+#endif
+{
+	return exvector_args_dispatcher<accepts_exvector_args_s<F>::value>::call(fptr, args, std::forward<Rest>(rest)...);
+}
+
+template<typename... Rest>
+struct eval_visitor {
+	const exvector& args;
+	std::tuple<Rest...> rest;
+
+	explicit eval_visitor(const exvector& args_, Rest&&... rest_) : args(args_),
+		rest{std::forward<Rest>(rest_)...} { }
+
+	template<typename F, int... S>
+	inline auto do_call(F fptr, seq<S...>) 
+#if __cplusplus < 201402L
+	-> typename return_type<F>::type
+#endif
+	{
+		return funcp_call(fptr, this->args, std::get<S>(rest)...);
+	}
+
+	template<typename F>
+	inline auto operator()(F fptr)
+#if __cplusplus < 201402L
+	-> typename return_type<F>::type
+#endif
+	{
+		return this->do_call(fptr, typename genseq<sizeof...(Rest)>::type());
+	}
+};
+
+template<typename Variant, typename... Rest>
+static inline auto call_funcp(const Variant& f, const exvector& args, Rest&&... rest)
+#if __cplusplus < 201402L
+-> decltype(visit(eval_visitor<Rest...>{args, std::forward<Rest>(rest)...}, f))
+#endif
+{
+	return visit(eval_visitor<Rest...>{args, std::forward<Rest>(rest)...}, f);
+}
+
+struct is_null_visitor {
+	template<typename F>
+	inline bool operator()(F fptr) {
+		return fptr == nullptr;
+	}
+};
+
+template<typename Variant>
+inline bool is_null(const Variant& v) {
+	return visit(is_null_visitor{}, v);
+}
 
 //////////
 // helper class function_options
@@ -77,23 +197,8 @@ void function_options::initialize()
 {
 	set_name("unnamed_function", "\\mbox{unnamed}");
 	nparams = 0;
-	eval_f = evalf_f = real_part_f = imag_part_f = conjugate_f = expand_f
-		= derivative_f = expl_derivative_f = power_f = series_f = nullptr;
-	info_f = nullptr;
 	evalf_params_first = true;
 	use_return_type = false;
-	eval_use_exvector_args = false;
-	evalf_use_exvector_args = false;
-	conjugate_use_exvector_args = false;
-	real_part_use_exvector_args = false;
-	imag_part_use_exvector_args = false;
-	expand_use_exvector_args = false;
-	derivative_use_exvector_args = false;
-	expl_derivative_use_exvector_args = false;
-	power_use_exvector_args = false;
-	series_use_exvector_args = false;
-	print_use_exvector_args = false;
-	info_use_exvector_args = false;
 	use_remember = false;
 	functions_with_same_name = 1;
 	symtree = 0;
@@ -115,28 +220,6 @@ function_options & function_options::latex_name(std::string const & tn)
 	TeX_name = tn;
 	return *this;
 }
-
-// the following lines have been generated for max. @maxargs@ parameters
-+++ for method, N in [ (f, N) for f in methods[0:-1] for N in range(1, maxargs + 1)]:
-function_options & function_options::@method@_func(@method@_funcp_@N@ e) 
-{
-	test_and_set_nparams(@N@);
-	@method@_f = @method@_funcp(e);
-	return *this;
-}
----
-// end of generated lines
-
-+++ for method in methods[0:-1]:
-function_options & function_options::@method@_func(@method@_funcp_exvector e)
-{
-	@method@_use_exvector_args = true;
-	@method@_f = @method@_funcp(e);
-	return *this;
-}
----
-
-// end of generated lines
 
 function_options & function_options::set_return_type(unsigned rt, const return_type_t* rtt)
 {
@@ -192,15 +275,12 @@ void function_options::test_and_set_nparams(unsigned n)
 	}
 }
 
-void function_options::set_print_func(unsigned id, print_funcp f)
+void function_options::set_print_func(unsigned id, print_funcp_variant&& f)
 {
 	if (id >= print_dispatch_table.size())
 		print_dispatch_table.resize(id + 1);
 	print_dispatch_table[id] = f;
 }
-
-/** This can be used as a hook for external applications. */
-unsigned function::current_serial = 0;
 
 
 GINAC_IMPLEMENT_REGISTERED_CLASS(function, exprseq)
@@ -224,14 +304,6 @@ function::function() : serial(0)
 function::function(unsigned ser) : serial(ser)
 {
 }
-
-// the following lines have been generated for max. @maxargs@ parameters
-+++ for N in range(1, maxargs + 1):
-function::function(unsigned ser, @seq('const ex & param%(n)d', N)@)
-	: exprseq{@seq('param%(n)d', N)@}, serial(ser)
-{
-}
----
 
 function::function(unsigned ser, const exprseq & es) : exprseq(es), serial(ser)
 {
@@ -297,14 +369,14 @@ void function::print(const print_context & c, unsigned level) const
 {
 	GINAC_ASSERT(serial<registered_functions().size());
 	const function_options &opt = registered_functions()[serial];
-	const std::vector<print_funcp> &pdt = opt.print_dispatch_table;
+	const auto &pdt = opt.print_dispatch_table;
 
 	// Dynamically dispatch on print_context type
 	const print_context_class_info *pc_info = &c.get_class_info();
 
 next_context:
 	unsigned id = pc_info->options.get_id();
-	if (id >= pdt.size() || pdt[id] == nullptr) {
+	if (id >= pdt.size() || is_null(pdt[id])) {
 
 		// Method not found, try parent print_context class
 		const print_context_class_info *parent_pc_info = pc_info->get_parent();
@@ -345,22 +417,8 @@ next_context:
 		}
 
 	} else {
-
 		// Method found, call it
-		current_serial = serial;
-		if (opt.print_use_exvector_args)
-			((print_funcp_exvector)pdt[id])(seq, c);
-		else switch (opt.nparams) {
-			// the following lines have been generated for max. @maxargs@ parameters
-+++ for N in range(1, maxargs + 1):
-			case @N@:
-				((print_funcp_@N@)(pdt[id]))(@seq('seq[%(n)d]', N, 0)@, c);
-				break;
----
-			// end of generated lines
-		default:
-			throw(std::logic_error("function::print(): invalid nparams"));
-		}
+		call_funcp(pdt[id], seq, std::cref(c));
 	}
 }
 
@@ -386,7 +444,7 @@ ex function::eval() const
 		}
 	}
 
-	if (opt.eval_f==nullptr) {
+	if (is_null(opt.eval_f)) {
 		return this->hold();
 	}
 
@@ -395,21 +453,7 @@ ex function::eval() const
 	if (use_remember && lookup_remember_table(eval_result)) {
 		return eval_result;
 	}
-	current_serial = serial;
-	if (opt.eval_use_exvector_args)
-		eval_result = ((eval_funcp_exvector)(opt.eval_f))(seq);
-	else
-	switch (opt.nparams) {
-		// the following lines have been generated for max. @maxargs@ parameters
-+++ for N in range(1, maxargs + 1):
-		case @N@:
-			eval_result = ((eval_funcp_@N@)(opt.eval_f))(@seq('seq[%(n)d]', N, 0)@);
-			break;
----
-		// end of generated lines
-	default:
-		throw(std::logic_error("function::eval(): invalid nparams"));
-	}
+	eval_result = call_funcp(opt.eval_f, seq);
 	if (use_remember) {
 		store_remember_table(eval_result);
 	}
@@ -432,21 +476,10 @@ ex function::evalf() const
 		}
 	}
 
-	if (opt.evalf_f==nullptr) {
+	if (is_null(opt.evalf_f)) {
 		return function(serial,eseq).hold();
 	}
-	current_serial = serial;
-	if (opt.evalf_use_exvector_args)
-		return ((evalf_funcp_exvector)(opt.evalf_f))(eseq);
-	switch (opt.nparams) {
-		// the following lines have been generated for max. @maxargs@ parameters
-+++ for N in range(1, maxargs + 1):
-		case @N@:
-			return ((evalf_funcp_@N@)(opt.evalf_f))(@seq('eseq[%(n)d]', N, 0)@);
----
-		// end of generated lines
-	}
-	throw(std::logic_error("function::evalf(): invalid nparams"));
+	return call_funcp(opt.evalf_f, eseq);
 }
 
 /**
@@ -491,33 +524,16 @@ ex function::series(const relational & r, int order, unsigned options) const
 	GINAC_ASSERT(serial<registered_functions().size());
 	const function_options &opt = registered_functions()[serial];
 
-	if (opt.series_f==nullptr) {
+	if (is_null(opt.series_f)) {
 		return basic::series(r, order);
 	}
 	ex res;
-	current_serial = serial;
-	if (opt.series_use_exvector_args) {
-		try {
-			res = ((series_funcp_exvector)(opt.series_f))(seq, r, order, options);
-		} catch (do_taylor) {
-			res = basic::series(r, order, options);
-		}
-		return res;
+	try {
+		res = call_funcp(opt.series_f, seq, std::cref(r), order, options);
+	} catch (do_taylor) {
+		res = basic::series(r, order, options);
 	}
-	switch (opt.nparams) {
-		// the following lines have been generated for max. @maxargs@ parameters
-+++ for N in range(1, maxargs + 1):
-		case @N@:
-			try {
-				res = ((series_funcp_@N@)(opt.series_f))(@seq('seq[%(n)d]', N, 0)@, r, order, options);
-			} catch (do_taylor) {
-				res = basic::series(r, order, options);
-			}
-			return res;
----
-		// end of generated lines
-	}
-	throw(std::logic_error("function::series(): invalid nparams"));
+	return res;
 }
 
 /** Implementation of ex::conjugate for functions. */
@@ -526,23 +542,10 @@ ex function::conjugate() const
 	GINAC_ASSERT(serial<registered_functions().size());
 	const function_options & opt = registered_functions()[serial];
 
-	if (opt.conjugate_f==nullptr) {
+	if (is_null(opt.conjugate_f))
 		return conjugate_function(*this).hold();
-	}
 
-	if (opt.conjugate_use_exvector_args) {
-		return ((conjugate_funcp_exvector)(opt.conjugate_f))(seq);
-	}
-
-	switch (opt.nparams) {
-		// the following lines have been generated for max. @maxargs@ parameters
-+++ for N in range(1, maxargs + 1):
-		case @N@:
-			return ((conjugate_funcp_@N@)(opt.conjugate_f))(@seq('seq[%(n)d]', N, 0)@);
----
-		// end of generated lines
-	}
-	throw(std::logic_error("function::conjugate(): invalid nparams"));
+	return call_funcp(opt.conjugate_f, seq);
 }
 
 /** Implementation of ex::real_part for functions. */
@@ -551,21 +554,10 @@ ex function::real_part() const
 	GINAC_ASSERT(serial<registered_functions().size());
 	const function_options & opt = registered_functions()[serial];
 
-	if (opt.real_part_f==nullptr)
+	if (is_null(opt.real_part_f))
 		return basic::real_part();
 
-	if (opt.real_part_use_exvector_args)
-		return ((real_part_funcp_exvector)(opt.real_part_f))(seq);
-
-	switch (opt.nparams) {
-		// the following lines have been generated for max. @maxargs@ parameters
-+++ for N in range(1, maxargs + 1):
-		case @N@:
-			return ((real_part_funcp_@N@)(opt.real_part_f))(@seq('seq[%(n)d]', N, 0)@);
----
-		// end of generated lines
-	}
-	throw(std::logic_error("function::real_part(): invalid nparams"));
+	return call_funcp(opt.real_part_f, seq);
 }
 
 /** Implementation of ex::imag_part for functions. */
@@ -574,21 +566,10 @@ ex function::imag_part() const
 	GINAC_ASSERT(serial<registered_functions().size());
 	const function_options & opt = registered_functions()[serial];
 
-	if (opt.imag_part_f==nullptr)
+	if (is_null(opt.imag_part_f))
 		return basic::imag_part();
 
-	if (opt.imag_part_use_exvector_args)
-		return ((imag_part_funcp_exvector)(opt.imag_part_f))(seq);
-
-	switch (opt.nparams) {
-		// the following lines have been generated for max. @maxargs@ parameters
-+++ for N in range(1, maxargs + 1):
-		case @N@:
-			return ((imag_part_funcp_@N@)(opt.imag_part_f))(@seq('seq[%(n)d]', N, 0)@);
----
-		// end of generated lines
-	}
-	throw(std::logic_error("function::imag_part(): invalid nparams"));
+	return call_funcp(opt.imag_part_f, seq);
 }
 
 /** Implementation of ex::info for functions. */
@@ -597,23 +578,10 @@ bool function::info(unsigned inf) const
 	GINAC_ASSERT(serial<registered_functions().size());
 	const function_options & opt = registered_functions()[serial];
 
-	if (opt.info_f==nullptr) {
+	if (is_null(opt.info_f)) {
 		return basic::info(inf);
 	}
-
-	if (opt.info_use_exvector_args) {
-		return ((info_funcp_exvector)(opt.info_f))(seq, inf);
-	}
-
-	switch (opt.nparams) {
-		// the following lines have been generated for max. @maxargs@ parameters
-+++ for N in range(1, maxargs + 1):
-		case @N@:
-			return ((info_funcp_@N@)(opt.info_f))(@seq('seq[%(n)d]', N, 0)@, inf);
----
-		// end of generated lines
-	}
-	throw(std::logic_error("function::info(): invalid nparams"));
+	return call_funcp(opt.info_f, seq, inf);
 }
 
 // protected
@@ -729,19 +697,9 @@ ex function::pderivative(unsigned diff_param) const // partial differentiation
 	GINAC_ASSERT(serial<registered_functions().size());
 	const function_options &opt = registered_functions()[serial];
 	
-	if (opt.derivative_f) {
+	if (!is_null(opt.derivative_f)) {
 		// Invoke the defined derivative function.
-		current_serial = serial;
-		if (opt.derivative_use_exvector_args)
-			return ((derivative_funcp_exvector)(opt.derivative_f))(seq, diff_param);
-		switch (opt.nparams) {
-			// the following lines have been generated for max. @maxargs@ parameters
-+++ for N in range(1, maxargs + 1):
-			case @N@:
-				return ((derivative_funcp_@N@)(opt.derivative_f))(@seq('seq[%(n)d]', N, 0)@, diff_param);
----
-			// end of generated lines
-		}
+		return call_funcp(opt.derivative_f, seq, diff_param);
 	}
 	// No derivative defined? Fall back to abstract derivative object.
 	return fderivative(serial, diff_param, seq);
@@ -752,19 +710,9 @@ ex function::expl_derivative(const symbol & s) const // explicit differentiation
 	GINAC_ASSERT(serial<registered_functions().size());
 	const function_options &opt = registered_functions()[serial];
 
-	if (opt.expl_derivative_f) {
+	if (!is_null(opt.expl_derivative_f)) {
 		// Invoke the defined explicit derivative function.
-		current_serial = serial;
-		if (opt.expl_derivative_use_exvector_args)
-			return ((expl_derivative_funcp_exvector)(opt.expl_derivative_f))(seq, s);
-		switch (opt.nparams) {
-			// the following lines have been generated for max. @maxargs@ parameters
-+++ for N in range(1, maxargs + 1):
-			case @N@:
-				return ((expl_derivative_funcp_@N@)(opt.expl_derivative_f))(@seq('seq[%(n)d]', N, 0)@, s);
----
-			// end of generated lines
-		}
+		return call_funcp(opt.expl_derivative_f, seq, std::cref(s));
 	}
 	// There is no fallback for explicit derivative.
 	throw(std::logic_error("function::expl_derivative(): explicit derivation is called, but no such function defined"));
@@ -775,19 +723,9 @@ ex function::power(const ex & power_param) const // power of function
 	GINAC_ASSERT(serial<registered_functions().size());
 	const function_options &opt = registered_functions()[serial];
 	
-	if (opt.power_f) {
+	if (!is_null(opt.power_f)) {
 		// Invoke the defined power function.
-		current_serial = serial;
-		if (opt.power_use_exvector_args)
-			return ((power_funcp_exvector)(opt.power_f))(seq,  power_param);
-		switch (opt.nparams) {
-			// the following lines have been generated for max. @maxargs@ parameters
-+++ for N in range(1, maxargs + 1):
-			case @N@:
-				return ((power_funcp_@N@)(opt.power_f))(@seq('seq[%(n)d]', N, 0)@, power_param);
----
-			// end of generated lines
-		}
+		return call_funcp(opt.power_f, seq, power_param);
 	}
 	// No power function defined? Fall back to returning a power object.
 	return dynallocate<GiNaC::power>(*this, power_param).setflag(status_flags::evaluated);
@@ -798,19 +736,10 @@ ex function::expand(unsigned options) const
 	GINAC_ASSERT(serial<registered_functions().size());
 	const function_options &opt = registered_functions()[serial];
 
-	if (opt.expand_f) {
+	if (!is_null(opt.expand_f)) {
 		// Invoke the defined expand function.
-		current_serial = serial;
-		if (opt.expand_use_exvector_args)
-			return ((expand_funcp_exvector)(opt.expand_f))(seq,  options);
-		switch (opt.nparams) {
-			// the following lines have been generated for max. @maxargs@ parameters
-+++ for N in range(1, maxargs + 1):
-			case @N@:
-				return ((expand_funcp_@N@)(opt.expand_f))(@seq('seq[%(n)d]', N, 0)@, options);
----
-			// end of generated lines
-		}
+		return call_funcp(opt.expand_f, seq, options);
+
 	}
 	// No expand function defined? Return the same function with expanded arguments (if required)
 	if (options & expand_options::expand_function_args)
@@ -882,6 +811,14 @@ std::string function::get_name() const
 {
 	GINAC_ASSERT(serial<registered_functions().size());
 	return registered_functions()[serial].name;
+}
+
+bool function_options::has_derivative() const {
+	return !is_null(derivative_f);
+}
+
+bool function_options::has_power() const {
+	return !is_null(power_f);
 }
 
 } // namespace GiNaC

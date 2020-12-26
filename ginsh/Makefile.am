@@ -5,7 +5,7 @@ BUILT_SOURCES = ginsh_parser.cpp ginsh_lexer.cpp ginsh_parser.hpp
 ginsh_SOURCES = ginsh_parser.cpp ginsh_parser.hpp ginsh_lexer.lpp ginsh.h ginsh_extensions.h
 ginsh_LDADD = ../ginac/libginac.la $(GINSH_LIBS)
 
-AM_CPPFLAGS = -I$(srcdir)/../ginac -I../ginac -DIN_GINAC
+AM_CPPFLAGS = -I$(srcdir)/../ginac -I../ginac -I$(top_srcdir)/3rdparty/mapbox/variant/include -DIN_GINAC
 
 man_MANS = ginsh.1
 

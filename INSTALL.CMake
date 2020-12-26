@@ -1,16 +1,15 @@
 PREREQUISITES
 =============
 
-1. A decent ISO C++-11 compiler. GCC (version >= 4.9) is recommended.
+1. A decent ISO C++-11 compiler. GCC (version >= 6) is recommended.
 2. CLN library (https://www.ginac.de/CLN), version >= 1.2.2
-3. CMake, version >= 2.8 (version 2.6.x might work too).
-4. Python 3
-5. (optional) pkg-config utility (http://pkg-config.freedesktop.org)
-6. (optional) bison (>= 2.3), flex (2.5.33), GNU readline (>= 4.3). These
-   are necessary to build ginsh, the GiNaC interactive shell, and can be
-   skipped if you don't intend to use ginsh (i.e. you need the GiNaC library
-   for compiling another piece of a software).
-7. (optional) To build the GiNaC tutorial and reference manual the doxygen
+3. CMake, version >= 3.10 (versions 3.1.x and newer might work too).
+4. (optional) pkg-config utility (http://pkg-config.freedesktop.org)
+5. (optional) Python 3, bison (>= 2.3), flex (2.5.33), GNU readline (>= 4.3).
+   These are necessary to build ginsh, the GiNaC interactive shell, and can
+   be skipped if you don't intend to use ginsh (i.e. you need the GiNaC
+   library for compiling another piece of a software).
+6. (optional) To build the GiNaC tutorial and reference manual the doxygen
    utility (it can be downloaded from https://www.doxygen.nl/) and TeX are
    necessary.
 
@@ -35,16 +34,16 @@ To install from a source distribution:
 
 4) Actually build GiNaC
 
- $ make
+ $ cmake --build .
 
 5) Run the test and benchmark suite (not mandatory, but strongly recommended)
 
- $ make check
+ $ cmake --build . -t check
 
 6) Install GiNaC
 
  [become root if necessary]
- # make install
+ # cmake --build . -t install
 
 To install from git: 
 --------------------

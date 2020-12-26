@@ -84,7 +84,7 @@ set(ginaclib_public_headers
     factor.h
     fderivative.h
     flags.h
-    ${CMAKE_CURRENT_BINARY_DIR}/function.h
+    function.h
     hash_map.h
     idx.h
     indexed.h 
@@ -149,6 +149,12 @@ set(ginaclib_private_headers
     polynomial/debug.h
 )
 
+set(mapbox_public_headers
+	${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/mapbox/variant/include/mapbox/variant.hpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/mapbox/variant/include/mapbox/recursive_wrapper.hpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/mapbox/variant/include/mapbox/variant_visitor.hpp
+)
+
 add_library(ginac ${ginaclib_sources}
 	${ginaclib_private_headers}
 	${ginaclib_public_headers}
@@ -166,6 +172,7 @@ target_include_directories(ginac PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/..>
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/mapbox/variant/include>
 	$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
@@ -189,19 +196,9 @@ install(TARGETS ginac
 		      ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
 )
 install(FILES ${ginaclib_public_headers} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/ginac")
+install(FILES ${mapbox_public_headers} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/mapbox/")
 install(EXPORT ginac-exports
 	FILE ginac-targets.cmake
 	NAMESPACE ginac::
 	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ginac
 )
-
-add_custom_command(
-	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/function.h
-	COMMAND ${PYTHON} ${CMAKE_CURRENT_SOURCE_DIR}/function.py -o ${CMAKE_CURRENT_BINARY_DIR}/function.h ${CMAKE_CURRENT_SOURCE_DIR}/function.hppy
-	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/function.hppy ${CMAKE_CURRENT_SOURCE_DIR}/function.py)
-
-add_custom_command(
-	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/function.cpp
-	COMMAND ${PYTHON} ${CMAKE_CURRENT_SOURCE_DIR}/function.py -o ${CMAKE_CURRENT_BINARY_DIR}/function.cpp ${CMAKE_CURRENT_SOURCE_DIR}/function.cppy
-	DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/function.h ${CMAKE_CURRENT_SOURCE_DIR}/function.cppy ${CMAKE_CURRENT_SOURCE_DIR}/function.py)
-

@@ -59,9 +59,9 @@ dnl Check for stuff needed for building the GiNaC interactive shell (ginsh).
 AC_CHECK_HEADERS(unistd.h)
 GINAC_HAVE_RUSAGE
 GINAC_READLINE
-dnl Python is necessary for building function.{cpp,h}
+dnl Python is necessary for building ginsh_{op,fcn}_help.h
 AM_PATH_PYTHON([2.7],,
-               [AC_MSG_ERROR([GiNaC will not compile because Python is missing])])
+               [AC_MSG_ERROR([ginsh will not compile because Python is missing])])
 
 dnl Check for dl library (needed for GiNaC::compile).
 GINAC_EXCOMPILER

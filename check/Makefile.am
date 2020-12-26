@@ -267,7 +267,7 @@ time_parser_SOURCES = time_parser.cpp \
 		      randomize_serials.cpp timer.cpp timer.h
 time_parser_LDADD = ../ginac/libginac.la
 
-AM_CPPFLAGS = -I$(srcdir)/../ginac -I../ginac -DIN_GINAC
+AM_CPPFLAGS = -I$(srcdir)/../ginac -I../ginac -I$(top_srcdir)/3rdparty/mapbox/variant/include -DIN_GINAC
 
 CLEANFILES = exam.gar
 EXTRA_DIST = CMakeLists.txt

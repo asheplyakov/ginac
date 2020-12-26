@@ -17,7 +17,7 @@ CMAKE_FILES = CMakeLists.txt \
 	      cmake/modules/FindGiNaC.cmake \
 	      cmake/modules/FindLibDL.cmake
 
-BUILD_HELPERS = scripts/yaptu.py scripts/fixupind.py
+BUILD_HELPERS = scripts/fixupind.py
 
 # All the rest of the distributed files
 EXTRA_DIST = ginac.pc GiNaC.spec $(BUILD_HELPERS) $(CMAKE_FILES)
