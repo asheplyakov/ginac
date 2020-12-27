@@ -70,6 +70,20 @@ typedef ex (* series_funcp)();
 typedef void (* print_funcp)();
 typedef bool (* info_funcp)();
 
+typedef ex (* eval_funcp_0)();
+typedef ex (* evalf_funcp_0)();
+typedef ex (* conjugate_funcp_0)();
+typedef ex (* real_part_funcp_0)();
+typedef ex (* imag_part_funcp_0)();
+typedef ex (* expand_funcp_0)(unsigned);
+typedef ex (* derivative_funcp_0)(unsigned);
+typedef ex (* expl_derivative_funcp_0)(const symbol&);
+typedef ex (* power_funcp_0)(const ex&);
+typedef ex (* series_funcp_0)(const relational&, int, unsigned);
+typedef void (* print_funcp_0)(const print_context&);
+typedef bool (* info_funcp_0)(unsigned);
+
+
 // the following lines have been generated for max. @maxargs@ parameters
 +++ for N, args in [ ( N, seq('const ex &', N) ) for N in range(1, maxargs + 1) ]:
 typedef ex (* eval_funcp_@N@)( @args@ );

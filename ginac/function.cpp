@@ -3,10 +3,6 @@
  *  Implementation of class of symbolic functions. */
 
 /*
- *  This file was generated automatically by function.py.
- *  Please do not modify it directly, edit function.cppy instead!
- *  function.py options: maxargs=@maxargs@
- *
  *  GiNaC Copyright (C) 1999-2020 Johannes Gutenberg University Mainz, Germany
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -116,27 +112,53 @@ function_options & function_options::latex_name(std::string const & tn)
 	return *this;
 }
 
-// the following lines have been generated for max. @maxargs@ parameters
-+++ for method, N in [ (f, N) for f in methods[0:-1] for N in range(1, maxargs + 1)]:
-function_options & function_options::@method@_func(@method@_funcp_@N@ e) 
-{
-	test_and_set_nparams(@N@);
-	@method@_f = @method@_funcp(e);
-	return *this;
-}
----
-// end of generated lines
+#include "macromagic.h"
+#define METHOD_0 eval
+#define METHOD_1 evalf
+#define METHOD_2 conjugate
+#define METHOD_3 real_part
+#define METHOD_4 imag_part
+#define METHOD_5 expand
+#define METHOD_6 derivative
+#define METHOD_7 expl_derivative
+#define METHOD_8 power
+#define METHOD_9 series
+#define METHOD_10 info
+#define METHOD_11 print
 
-+++ for method in methods[0:-1]:
-function_options & function_options::@method@_func(@method@_funcp_exvector e)
-{
-	@method@_use_exvector_args = true;
-	@method@_f = @method@_funcp(e);
-	return *this;
+#define IMPLEMENT_FUNCP_SETTER_X(n, METHOD) \
+function_options & function_options::METHOD##_func(METHOD##_funcp_##n e) { \
+	test_and_set_nparams(n); \
+	METHOD##_f = METHOD##_funcp(e); \
+	return *this; \
 }
----
 
-// end of generated lines
+#define IMPLEMENT_FUNCP_SETTER(n, METHOD) WHEN(n)(IMPLEMENT_FUNCP_SETTER_X(n, METHOD))
+
+#define IMPLEMENT_SETTERS(n, _) \
+        REPEAT(15, IMPLEMENT_FUNCP_SETTER, CAT(METHOD_, n))
+
+EVAL(REPEAT(11, IMPLEMENT_SETTERS, ~))
+
+#undef IMPLEMENT_FUNCP_SETTER_X
+#undef IMPLEMENT_FUNCP_SETTER
+#undef IMPLEMENT_SETTERS
+
+#define IMPLEMENT_FUNCP_SETTER(_, METHOD) \
+function_options& function_options::METHOD##_func(METHOD##_funcp_exvector e) { \
+	METHOD##_use_exvector_args = true; \
+	METHOD##_f = METHOD##_funcp(e); \
+	return *this; \
+}
+
+#define IMPLEMENT_EXVECTOR_FUNCP_SETTERS(n, _) \
+        REPEAT(1, IMPLEMENT_FUNCP_SETTER, CAT(METHOD_, n)) 
+
+EVAL(REPEAT(11, IMPLEMENT_EXVECTOR_FUNCP_SETTERS, ~))
+#undef IMPLEMENT_EXVECTOR_FUNCP_SETTERS
+#undef IMPLEMENT_FUNCP_SETTER
+#include "macromagic_cleanup.h"
+
 
 function_options & function_options::set_return_type(unsigned rt, const return_type_t* rtt)
 {
@@ -343,13 +365,17 @@ next_context:
 		if (opt.print_use_exvector_args)
 			((print_funcp_exvector)pdt[id])(seq, c);
 		else switch (opt.nparams) {
-			// the following lines have been generated for max. @maxargs@ parameters
-+++ for N in range(1, maxargs + 1):
-			case @N@:
-				((print_funcp_@N@)(pdt[id]))(@seq('seq[%(n)d]', N, 0)@, c);
-				break;
----
-			// end of generated lines
+#include "macromagic.h"
+#define ARG_N(n, _) WHEN(n)(COMMA) seq[n]
+#define DISPATCH(n, _) \
+	case n: \
+		((print_funcp_##n)(pdt[id]))(REPEAT(n, ARG_N, ~) WHEN(n)(COMMA) c); \
+		break;
+
+	EVAL(REPEAT(14, DISPATCH, ~));
+#undef DISPATCH
+#undef ARG_N
+#include "macromagic_cleanup.h"
 		default:
 			throw(std::logic_error("function::print(): invalid nparams"));
 		}
@@ -392,13 +418,17 @@ ex function::eval() const
 		eval_result = ((eval_funcp_exvector)(opt.eval_f))(seq);
 	else
 	switch (opt.nparams) {
-		// the following lines have been generated for max. @maxargs@ parameters
-+++ for N in range(1, maxargs + 1):
-		case @N@:
-			eval_result = ((eval_funcp_@N@)(opt.eval_f))(@seq('seq[%(n)d]', N, 0)@);
-			break;
----
-		// end of generated lines
+#include "macromagic.h"
+#define ARG_N(n, _) WHEN(n)(COMMA) seq[n]
+#define DISPATCH_N(n, _) \
+	case n: \
+		eval_result = ((eval_funcp_##n)(opt.eval_f))(REPEAT(n, ARG_N, ~)); \
+		break;
+
+		EVAL(REPEAT(14, DISPATCH_N, ~));
+#undef DISPATCH_N
+#undef ARG_N
+#include "macromagic_cleanup.h"
 	default:
 		throw(std::logic_error("function::eval(): invalid nparams"));
 	}
@@ -431,13 +461,17 @@ ex function::evalf() const
 	if (opt.evalf_use_exvector_args)
 		return ((evalf_funcp_exvector)(opt.evalf_f))(seq);
 	switch (opt.nparams) {
-		// the following lines have been generated for max. @maxargs@ parameters
-+++ for N in range(1, maxargs + 1):
-		case @N@:
-			return ((evalf_funcp_@N@)(opt.evalf_f))(@seq('eseq[%(n)d]', N, 0)@);
----
-		// end of generated lines
+#include "macromagic.h"
+#define ARG_N(n, _) WHEN(n)(COMMA) eseq[n]
+#define DISPATCH_N(n, _) \
+	case n: \
+		return ((evalf_funcp_##n)(opt.evalf_f))(REPEAT(n, ARG_N, ~));
+	
+		EVAL(REPEAT(14, DISPATCH_N, ~));
 	}
+#undef DISPATCH_N
+#undef ARG_N
+#include "macromagic_cleanup.h"
 	throw(std::logic_error("function::evalf(): invalid nparams"));
 }
 
@@ -497,17 +531,21 @@ ex function::series(const relational & r, int order, unsigned options) const
 		return res;
 	}
 	switch (opt.nparams) {
-		// the following lines have been generated for max. @maxargs@ parameters
-+++ for N in range(1, maxargs + 1):
-		case @N@:
-			try {
-				res = ((series_funcp_@N@)(opt.series_f))(@seq('seq[%(n)d]', N, 0)@, r, order, options);
-			} catch (do_taylor) {
-				res = basic::series(r, order, options);
-			}
-			return res;
----
-		// end of generated lines
+#include "macromagic.h"
+#define ARG_N(n, _) WHEN(n)(COMMA) seq[n]
+#define DISPATCH(n, _) \
+	case n: \
+		try { \
+			res = ((series_funcp_##n)(opt.series_f))(REPEAT(n, ARG_N, ~) WHEN(n)(COMMA) r, order, options); \
+		} catch (do_taylor) { \
+			res = basic::series(r, order, options); \
+		} \
+		return res;
+
+	EVAL(REPEAT(14, DISPATCH, ~));
+#undef DISPATCH
+#undef ARG_N
+#include "macromagic_cleanup.h"
 	}
 	throw(std::logic_error("function::series(): invalid nparams"));
 }
@@ -527,12 +565,16 @@ ex function::conjugate() const
 	}
 
 	switch (opt.nparams) {
-		// the following lines have been generated for max. @maxargs@ parameters
-+++ for N in range(1, maxargs + 1):
-		case @N@:
-			return ((conjugate_funcp_@N@)(opt.conjugate_f))(@seq('seq[%(n)d]', N, 0)@);
----
-		// end of generated lines
+#include "macromagic.h"
+#define ARG_N(n, _) WHEN(n)(COMMA) seq[n]
+#define DISPATCH(n, _) \
+	case n: \
+		return ((conjugate_funcp_##n)(opt.conjugate_f))(REPEAT(n, ARG_N, ~));
+	
+	EVAL(REPEAT(14, DISPATCH, ~));
+#undef DISPATCH
+#undef ARG_N
+#include "macromagic_cleanup.h"
 	}
 	throw(std::logic_error("function::conjugate(): invalid nparams"));
 }
@@ -550,12 +592,16 @@ ex function::real_part() const
 		return ((real_part_funcp_exvector)(opt.real_part_f))(seq);
 
 	switch (opt.nparams) {
-		// the following lines have been generated for max. @maxargs@ parameters
-+++ for N in range(1, maxargs + 1):
-		case @N@:
-			return ((real_part_funcp_@N@)(opt.real_part_f))(@seq('seq[%(n)d]', N, 0)@);
----
-		// end of generated lines
+#include "macromagic.h"
+#define ARG_N(n, _) WHEN(n)(COMMA) seq[n]
+#define DISPATCH(n, _) \
+	case n: \
+		return ((real_part_funcp_##n)(opt.real_part_f))(REPEAT(n, ARG_N, ~));
+
+		EVAL(REPEAT(14, DISPATCH, ~));
+#include "macromagic_cleanup.h"
+#undef ARG_N
+#undef DISPATCH
 	}
 	throw(std::logic_error("function::real_part(): invalid nparams"));
 }
@@ -573,12 +619,16 @@ ex function::imag_part() const
 		return ((imag_part_funcp_exvector)(opt.imag_part_f))(seq);
 
 	switch (opt.nparams) {
-		// the following lines have been generated for max. @maxargs@ parameters
-+++ for N in range(1, maxargs + 1):
-		case @N@:
-			return ((imag_part_funcp_@N@)(opt.imag_part_f))(@seq('seq[%(n)d]', N, 0)@);
----
-		// end of generated lines
+#include "macromagic.h"
+#define ARG_N(n, _) WHEN(n)(COMMA) seq[n]
+#define DISPATCH(n, _) \
+	case n: \
+		return ((real_part_funcp_##n)(opt.imag_part_f))(REPEAT(n, ARG_N, ~));
+
+		EVAL(REPEAT(14, DISPATCH, ~));
+#include "macromagic_cleanup.h"
+#undef ARG_N
+#undef DISPATCH
 	}
 	throw(std::logic_error("function::imag_part(): invalid nparams"));
 }
@@ -598,12 +648,16 @@ bool function::info(unsigned inf) const
 	}
 
 	switch (opt.nparams) {
-		// the following lines have been generated for max. @maxargs@ parameters
-+++ for N in range(1, maxargs + 1):
-		case @N@:
-			return ((info_funcp_@N@)(opt.info_f))(@seq('seq[%(n)d]', N, 0)@, inf);
----
-		// end of generated lines
+#include "macromagic.h"
+#define ARG_N(n, _) WHEN(n)(COMMA) seq[n]
+#define DISPATCH(n, _) \
+	case n: \
+		return ((info_funcp_##n)(opt.info_f))(REPEAT(n, ARG_N, ~) WHEN(n)(COMMA) inf);
+
+		EVAL(REPEAT(14, DISPATCH, ~));
+#include "macromagic_cleanup.h"
+#undef ARG_N
+#undef DISPATCH
 	}
 	throw(std::logic_error("function::info(): invalid nparams"));
 }
@@ -727,12 +781,16 @@ ex function::pderivative(unsigned diff_param) const // partial differentiation
 		if (opt.derivative_use_exvector_args)
 			return ((derivative_funcp_exvector)(opt.derivative_f))(seq, diff_param);
 		switch (opt.nparams) {
-			// the following lines have been generated for max. @maxargs@ parameters
-+++ for N in range(1, maxargs + 1):
-			case @N@:
-				return ((derivative_funcp_@N@)(opt.derivative_f))(@seq('seq[%(n)d]', N, 0)@, diff_param);
----
-			// end of generated lines
+#include "macromagic.h"
+#define ARG_N(n, _) WHEN(n)(COMMA) seq[n]
+#define DISPATCH(n, _) \
+	case n: \
+		return ((derivative_funcp_##n)(opt.derivative_f))(REPEAT(n, ARG_N, ~) WHEN(n)(COMMA) diff_param);
+
+		EVAL(REPEAT(14, DISPATCH, ~));
+#include "macromagic_cleanup.h"
+#undef ARG_N
+#undef DISPATCH
 		}
 	}
 	// No derivative defined? Fall back to abstract derivative object.
@@ -750,14 +808,18 @@ ex function::expl_derivative(const symbol & s) const // explicit differentiation
 		if (opt.expl_derivative_use_exvector_args)
 			return ((expl_derivative_funcp_exvector)(opt.expl_derivative_f))(seq, s);
 		switch (opt.nparams) {
-			// the following lines have been generated for max. @maxargs@ parameters
-+++ for N in range(1, maxargs + 1):
-			case @N@:
-				return ((expl_derivative_funcp_@N@)(opt.expl_derivative_f))(@seq('seq[%(n)d]', N, 0)@, s);
----
-			// end of generated lines
+#include "macromagic.h"
+#define ARG_N(n, _) WHEN(n)(COMMA) seq[n]
+#define DISPATCH(n, _) \
+		case n: \
+			return ((expl_derivative_funcp_##n)(opt.expl_derivative_f))(REPEAT(n, ARG_N, ~) WHEN(n)(COMMA) s);
+
+		EVAL(REPEAT(14, DISPATCH, ~))
 		}
 	}
+#include "macromagic_cleanup.h"
+#undef ARG_N
+#undef DISPATCH
 	// There is no fallback for explicit derivative.
 	throw(std::logic_error("function::expl_derivative(): explicit derivation is called, but no such function defined"));
 }
@@ -773,12 +835,16 @@ ex function::power(const ex & power_param) const // power of function
 		if (opt.power_use_exvector_args)
 			return ((power_funcp_exvector)(opt.power_f))(seq,  power_param);
 		switch (opt.nparams) {
-			// the following lines have been generated for max. @maxargs@ parameters
-+++ for N in range(1, maxargs + 1):
-			case @N@:
-				return ((power_funcp_@N@)(opt.power_f))(@seq('seq[%(n)d]', N, 0)@, power_param);
----
-			// end of generated lines
+#include "macromagic.h"
+#define ARG_N(n, _) WHEN(n)(COMMA) seq[n]
+#define DISPATCH(n, _) \
+	case n: \
+		return ((power_funcp_##n)(opt.power_f))(REPEAT(n, ARG_N, ~) WHEN(n)(COMMA) power_param);
+
+		EVAL(REPEAT(14, DISPATCH, ~));
+#include "macromagic_cleanup.h"
+#undef ARG_N
+#undef DISPATCH
 		}
 	}
 	// No power function defined? Fall back to returning a power object.
@@ -796,13 +862,17 @@ ex function::expand(unsigned options) const
 		if (opt.expand_use_exvector_args)
 			return ((expand_funcp_exvector)(opt.expand_f))(seq,  options);
 		switch (opt.nparams) {
-			// the following lines have been generated for max. @maxargs@ parameters
-+++ for N in range(1, maxargs + 1):
-			case @N@:
-				return ((expand_funcp_@N@)(opt.expand_f))(@seq('seq[%(n)d]', N, 0)@, options);
----
-			// end of generated lines
+#include "macromagic.h"
+#define ARG_N(n, _) WHEN(n)(COMMA) seq[n]
+#define DISPATCH(n, _) \
+	case n: \
+		return ((expand_funcp_##n)(opt.expand_f))(REPEAT(n, ARG_N, ~) WHEN(n)(COMMA) options);
+
+		EVAL(REPEAT(14, DISPATCH, ~));
 		}
+#include "macromagic_cleanup.h"
+#undef ARG_N
+#undef DISPATCH
 	}
 	// No expand function defined? Return the same function with expanded arguments (if required)
 	if (options & expand_options::expand_function_args)
