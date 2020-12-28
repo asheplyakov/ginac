@@ -33,6 +33,7 @@
 #include "utils.h"
 #include "hash_seed.h"
 #include "remember.h"
+#include "metaprog.h"
 
 #include <iostream>
 #include <limits>
@@ -418,17 +419,48 @@ ex function::eval() const
 		eval_result = ((eval_funcp_exvector)(opt.eval_f))(seq);
 	else
 	switch (opt.nparams) {
-#include "macromagic.h"
-#define ARG_N(n, _) WHEN(n)(COMMA) seq[n]
-#define DISPATCH_N(n, _) \
-	case n: \
-		eval_result = ((eval_funcp_##n)(opt.eval_f))(REPEAT(n, ARG_N, ~)); \
+	case 1:
+		eval_result = call_with_array((eval_funcp_1)(opt.eval_f), seq);
 		break;
-
-		EVAL(REPEAT(14, DISPATCH_N, ~));
-#undef DISPATCH_N
-#undef ARG_N
-#include "macromagic_cleanup.h"
+	case 2:
+		eval_result = call_with_array((eval_funcp_2)(opt.eval_f), seq);
+		break;
+	case 3:
+		eval_result = call_with_array((eval_funcp_3)(opt.eval_f), seq);
+		break;
+	case 4:
+		eval_result = call_with_array((eval_funcp_4)(opt.eval_f), seq);
+		break;
+	case 5:
+		eval_result = call_with_array((eval_funcp_5)(opt.eval_f), seq);
+		break;
+	case 6:
+		eval_result = call_with_array((eval_funcp_6)(opt.eval_f), seq);
+		break;
+	case 7:
+		eval_result = call_with_array((eval_funcp_7)(opt.eval_f), seq);
+		break;
+	case 8:
+		eval_result = call_with_array((eval_funcp_8)(opt.eval_f), seq);
+		break;
+	case 9:
+		eval_result = call_with_array((eval_funcp_9)(opt.eval_f), seq);
+		break;
+	case 10:
+		eval_result = call_with_array((eval_funcp_10)(opt.eval_f), seq);
+		break;
+	case 11:
+		eval_result = call_with_array((eval_funcp_11)(opt.eval_f), seq);
+		break;
+	case 12:
+		eval_result = call_with_array((eval_funcp_12)(opt.eval_f), seq);
+		break;
+	case 13:
+		eval_result = call_with_array((eval_funcp_13)(opt.eval_f), seq);
+		break;
+	case 14:
+		eval_result = call_with_array((eval_funcp_14)(opt.eval_f), seq);
+		break;
 	default:
 		throw(std::logic_error("function::eval(): invalid nparams"));
 	}
@@ -462,15 +494,16 @@ ex function::evalf() const
 		return ((evalf_funcp_exvector)(opt.evalf_f))(seq);
 	switch (opt.nparams) {
 #include "macromagic.h"
-#define ARG_N(n, _) WHEN(n)(COMMA) eseq[n]
-#define DISPATCH_N(n, _) \
+#define DISPATCH_X(n) \
 	case n: \
-		return ((evalf_funcp_##n)(opt.evalf_f))(REPEAT(n, ARG_N, ~));
-	
-		EVAL(REPEAT(14, DISPATCH_N, ~));
+		return call_with_array((evalf_funcp_##n)(opt.evalf_f), eseq);
+
+#define DISPATCH(n, _) WHEN(n)(DISPATCH_X(n))
+
+	EVAL(REPEAT(14, DISPATCH, ~));
 	}
 #undef DISPATCH_N
-#undef ARG_N
+#undef DISPATCH
 #include "macromagic_cleanup.h"
 	throw(std::logic_error("function::evalf(): invalid nparams"));
 }
