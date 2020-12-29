@@ -50,3 +50,15 @@ template<typename F, typename C>
 static inline auto call_with_array(const F& f, const C& packed_args) -> decltype(array_unpacker<get_arity_s<F>::value>{}.call(f, packed_args)) {
 	return array_unpacker<get_arity_s<F>::value>{}.call(f, packed_args);
 }
+
+template<typename ValT, typename ArgsT, int N, typename... Rest> struct nary_func_declarator {
+	template<int x> struct dummy {
+		typedef ArgsT type;
+	};
+	template<typename X> struct helper;
+	template<int... S> struct helper<seq<S...>> {
+		typedef ValT (*type)(typename dummy<S>::type..., Rest...);
+	};
+	typedef typename helper<typename genseq<N>::type>::type type;
+};
+

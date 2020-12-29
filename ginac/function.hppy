@@ -27,6 +27,7 @@
 #define GINAC_FUNCTION_H
 
 #include "exprseq.h"
+#include "metaprog.h"
 
 #include <string>
 #include <vector>
@@ -85,27 +86,32 @@ typedef bool (* info_funcp_0)(unsigned);
 
 
 // the following lines have been generated for max. @maxargs@ parameters
-+++ for N, args in [ ( N, seq('const ex &', N) ) for N in range(1, maxargs + 1) ]:
-typedef ex (* eval_funcp_@N@)( @args@ );
-typedef ex (* evalf_funcp_@N@)( @args@ );
-typedef ex (* conjugate_funcp_@N@)( @args@ );
-typedef ex (* real_part_funcp_@N@)( @args@ );
-typedef ex (* imag_part_funcp_@N@)( @args@ );
-typedef ex (* expand_funcp_@N@)( @args@, unsigned );
-typedef ex (* derivative_funcp_@N@)( @args@, unsigned );
-typedef ex (* expl_derivative_funcp_@N@)( @args@, const symbol & );
-typedef ex (* power_funcp_@N@)( @args@, const ex & );
-typedef ex (* series_funcp_@N@)( @args@, const relational &, int, unsigned );
-typedef void (* print_funcp_@N@)( @args@, const print_context & );
-typedef bool (* info_funcp_@N@)( @args@, unsigned );
+template<int N>
+using print_func_declarator = typename nary_func_declarator<void, const ex&, N, const print_context&>::type;
+
++++ for N in range(1, maxargs + 1):
+typedef typename nary_func_declarator<ex, const ex&, @N@>::type eval_funcp_@N@;
+typedef typename nary_func_declarator<ex, const ex&, @N@>::type evalf_funcp_@N@;
+typedef typename nary_func_declarator<ex, const ex&, @N@>::type conjugate_funcp_@N@;
+typedef typename nary_func_declarator<ex, const ex&, @N@>::type real_part_funcp_@N@;
+typedef typename nary_func_declarator<ex, const ex&, @N@>::type imag_part_funcp_@N@;
+typedef typename nary_func_declarator<ex, const ex&, @N@, unsigned>::type expand_funcp_@N@;
+typedef typename nary_func_declarator<ex, const ex&, @N@, unsigned>::type derivative_funcp_@N@;
+typedef typename nary_func_declarator<ex, const ex&, @N@, const symbol&>::type expl_derivative_funcp_@N@;
+typedef typename nary_func_declarator<ex, const ex&, @N@, const ex&>::type power_funcp_@N@;
+typedef typename nary_func_declarator<ex, const ex&, @N@, const relational&, int, unsigned>::type series_funcp_@N@;
+typedef typename nary_func_declarator<void, const ex&, @N@, const print_context&>::type print_funcp_@N@;
+typedef typename nary_func_declarator<bool, const ex&, @N@, unsigned>::type info_funcp_@N@;
 ---
 // end of generated lines
 
 // Alternatively, an exvector may be passed into the static function, instead
 // of individual ex objects.  Then, the number of arguments is not limited.
-+++ for fp in "eval evalf conjugate real_part imag_part".split():
-typedef ex (* @fp@_funcp_exvector)(const exvector &);
----
+typedef ex (* eval_funcp_exvector)(const exvector &);
+typedef ex (* evalf_funcp_exvector)(const exvector &);
+typedef ex (* conjugate_funcp_exvector)(const exvector &);
+typedef ex (* real_part_funcp_exvector)(const exvector &);
+typedef ex (* imag_part_funcp_exvector)(const exvector &);
 typedef ex (* expand_funcp_exvector)(const exvector &, unsigned);
 typedef ex (* derivative_funcp_exvector)(const exvector &, unsigned);
 typedef ex (* expl_derivative_funcp_exvector)(const exvector &, const symbol &);
@@ -130,8 +136,14 @@ public:
 	function_options & set_name(std::string const & n, std::string const & tn=std::string());
 	function_options & latex_name(std::string const & tn);
 	// following lines have been generated for max. @maxargs@ parameters
-+++ for f, N in [ (f, N) for f in methods[0:-1] for N in range(1, maxargs + 1) ]:
-	function_options & @f@_func(@f@_funcp_@N@ e);
++++ for f in methods[0:-1]:
+	template<typename F>
+	typename std::enable_if<get_arity_s<F>::value <= @maxargs@, function_options&>::type
+	@f@_func(F e) {
+		test_and_set_nparams(get_arity_s<F>::value);
+		@f@_f = @f@_funcp(e);
+		return *this;
+	}
 ---
 +++ for f in methods[0:-1]:
 	function_options & @f@_func(@f@_funcp_exvector e);

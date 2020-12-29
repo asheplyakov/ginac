@@ -93,6 +93,7 @@ set(ginaclib_public_headers
     integration_kernel.h
     lst.h
     matrix.h
+    metaprog.h
     mul.h
     ncmul.h
     normal.h

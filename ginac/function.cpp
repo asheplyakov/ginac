@@ -125,25 +125,6 @@ function_options & function_options::latex_name(std::string const & tn)
 #define METHOD_8 power
 #define METHOD_9 series
 #define METHOD_10 info
-#define METHOD_11 print
-
-#define IMPLEMENT_FUNCP_SETTER_X(n, METHOD) \
-function_options & function_options::METHOD##_func(METHOD##_funcp_##n e) { \
-	test_and_set_nparams(n); \
-	METHOD##_f = METHOD##_funcp(e); \
-	return *this; \
-}
-
-#define IMPLEMENT_FUNCP_SETTER(n, METHOD) WHEN(n)(IMPLEMENT_FUNCP_SETTER_X(n, METHOD))
-
-#define IMPLEMENT_SETTERS(n, _) \
-        REPEAT(15, IMPLEMENT_FUNCP_SETTER, CAT(METHOD_, n))
-
-EVAL(REPEAT(11, IMPLEMENT_SETTERS, ~))
-
-#undef IMPLEMENT_FUNCP_SETTER_X
-#undef IMPLEMENT_FUNCP_SETTER
-#undef IMPLEMENT_SETTERS
 
 #define IMPLEMENT_FUNCP_SETTER(_, METHOD) \
 function_options& function_options::METHOD##_func(METHOD##_funcp_exvector e) { \
