@@ -149,7 +149,10 @@ set(ginaclib_private_headers
     polynomial/debug.h
 )
 
-add_library(ginac ${ginaclib_sources})
+add_library(ginac ${ginaclib_sources}
+	${ginaclib_private_headers}
+	${ginaclib_public_headers}
+)
 add_library(ginac::ginac ALIAS ginac)
 set_target_properties(ginac PROPERTIES
 	SOVERSION ${ginaclib_soversion}
