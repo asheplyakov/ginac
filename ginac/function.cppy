@@ -437,7 +437,7 @@ ex function::evalf() const
 	}
 	current_serial = serial;
 	if (opt.evalf_use_exvector_args)
-		return ((evalf_funcp_exvector)(opt.evalf_f))(seq);
+		return ((evalf_funcp_exvector)(opt.evalf_f))(eseq);
 	switch (opt.nparams) {
 		// the following lines have been generated for max. @maxargs@ parameters
 +++ for N in range(1, maxargs + 1):

@@ -27,7 +27,9 @@ set(ginac_exams
 	exam_pgcd
 	exam_mod_gcd
 	exam_real_imag
-	exam_chinrem_gcd)
+	exam_chinrem_gcd
+	exam_function_exvector
+)
 
 set(ginac_checks
 	check_numeric

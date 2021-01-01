@@ -27,6 +27,7 @@ EXAMS = exam_paranoia \
 	exam_pgcd \
 	exam_mod_gcd \
 	exam_chinrem_gcd \
+	exam_function_exvector \
 	exam_real_imag
 
 CHECKS = check_numeric \
@@ -148,6 +149,9 @@ exam_real_imag_LDADD = ../ginac/libginac.la
 
 exam_chinrem_gcd_SOURCES = exam_chinrem_gcd.cpp
 exam_chinrem_gcd_LDADD = ../ginac/libginac.la
+
+exam_function_exvector_SOURCES = exam_function_exvector.cpp
+exam_function_exvector_LDADD = ../ginac/libginac.la
 
 check_numeric_SOURCES = check_numeric.cpp
 check_numeric_LDADD = ../ginac/libginac.la
