@@ -26,6 +26,7 @@
 #include "basic.h"
 #include "archive.h"
 #include "numeric.h"
+#include "lst.h"
 
 #include <cln/complex.h>
 #include <vector>

@@ -38,6 +38,7 @@ template <> bool lst::info(unsigned inf) const
 		return inherited::info(inf);
 }
 
+template bool container<std::list>::info(unsigned) const;
 GINAC_BIND_UNARCHIVER(lst);
 
 } // namespace GiNaC
