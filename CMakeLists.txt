@@ -17,6 +17,14 @@ string(REGEX REPLACE "^.*GINAC_LT_REVISION[ \t]+([0-9]+).*" "\\1" ginac_lt_revis
 math(EXPR ginaclib_soversion "${ginac_lt_current} - ${ginac_lt_age}")
 set(ginaclib_version ${ginaclib_soversion}.${ginac_lt_age}.${ginac_lt_revision})
 
+
+if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/config.status
+		OR EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/libtool)
+	message(FATAL_ERROR
+		"Source directory has been already configured by configure script. "
+		"Please run `make distclean` in ${CMAKE_CURRENT_SOURCE_DIR} and try again."
+	)
+endif()
 include(GNUInstallDirs)
 
 # make check
