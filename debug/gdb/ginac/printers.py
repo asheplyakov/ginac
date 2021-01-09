@@ -81,6 +81,7 @@ class ClNumber(object):
         self.val = val
         self.cl_class_bignum = gdb.parse_and_eval('::cln::cl_class_bignum')
         self.cl_class_ratio = gdb.parse_and_eval('::cln::cl_class_ratio')
+        self.cl_class_complex = gdb.parse_and_eval('::cln::cl_class_complex')
 
     @property
     def word(self):
@@ -122,6 +123,11 @@ class ClNumber(object):
         return ptr.dereference()['type'] == self.cl_class_ratio.address
 
     @property
+    def is_complex(self):
+        ptr = self.val['heappointer']
+        return ptr.dereference()['type'] == self.cl_class_complex.address
+
+    @property
     def number(self):
         if self.is_immediate:
             return self._decode_fixnum()
@@ -129,6 +135,8 @@ class ClNumber(object):
             return self.decode_bignum()
         elif self.is_ratio:
             return self.decode_ratio()
+        elif self.is_complex:
+            return self.decode_complex()
 
     def decode_bignum(self):
         heappointer = self.val['heappointer']
@@ -155,6 +163,27 @@ class ClNumber(object):
         numerator = ClNumber(ratio['numerator'])
         denominator = ClNumber(ratio['denominator'])
         return fractions.Fraction(numerator.number, denominator.number)
+
+    def decode_complex(self):
+        ptr = self.val['heappointer']
+        complex_type = gdb.lookup_type('::cln::cl_heap_complex')
+        complex_ptr = ptr.cast(complex_type.pointer())
+        complex_ = complex_ptr.dereference()
+        real = ClNumber(complex_['realpart']).number
+        imag = ClNumber(complex_['imagpart']).number
+        mark = '+I'
+        if imag == 1:
+            return str(real) + ' + I'
+        elif imag == -1:
+            return str(real) + ' - I'
+        elif imag == 0:
+            return str(real)
+        elif imag < 0:
+            return '{0} - {1}*I'.format(str(real), str(-imag))
+        elif imag > 0:
+            return '{0} + {1}*I'.format(str(real), str(imag))
+        else:
+            return '{0} + ({1})*I'.format(str(real), str(imag))
 
 
 class ClNumberPrinter:
