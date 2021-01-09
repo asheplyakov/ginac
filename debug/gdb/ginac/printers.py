@@ -1,5 +1,6 @@
 
 import ctypes
+import fractions
 import gdb
 import gdb.printing
 import gdb.types
@@ -79,6 +80,7 @@ class ClNumber(object):
     def __init__(self, val):
         self.val = val
         self.cl_class_bignum = gdb.parse_and_eval('::cln::cl_class_bignum')
+        self.cl_class_ratio = gdb.parse_and_eval('::cln::cl_class_ratio')
 
     @property
     def word(self):
@@ -94,16 +96,19 @@ class ClNumber(object):
 
     @property
     def is_pointer(self):
-        return self.word & self.IMMEDIATE_MASK == 0
+        return not self.is_immediate
 
     @property
     def is_zero(self):
         return self.fixnum == 0
 
+    def _decode_fixnum(self):
+            return ctypes.c_long(self.word).value >> self.VALUE_SHIFT
+
     @property
     def fixnum(self):
         if self.is_immediate:
-            return ctypes.c_long(self.word).value >> self.VALUE_SHIFT
+            return self._decode_fixnum()
 
     @property
     def is_bignum(self):
@@ -112,11 +117,18 @@ class ClNumber(object):
         return heappointer.dereference()['type'] == self.cl_class_bignum.address
 
     @property
+    def is_ratio(self):
+        ptr = self.val['heappointer']
+        return ptr.dereference()['type'] == self.cl_class_ratio.address
+
+    @property
     def number(self):
         if self.is_immediate:
-            return ctypes.c_long(self.word).value >> self.VALUE_SHIFT
+            return self._decode_fixnum()
         elif self.is_bignum:
             return self.decode_bignum()
+        elif self.is_ratio:
+            return self.decode_ratio()
 
     def decode_bignum(self):
         heappointer = self.val['heappointer']
@@ -134,6 +146,15 @@ class ClNumber(object):
             data_ptr = data_ptr + 1
             i += 1
         return value
+
+    def decode_ratio(self):
+        ptr = self.val['heappointer']
+        ratio_type = gdb.lookup_type('::cln::cl_heap_ratio')
+        ratio_ptr = ptr.cast(ratio_type.pointer())
+        ratio = ratio_ptr.dereference()
+        numerator = ClNumber(ratio['numerator'])
+        denominator = ClNumber(ratio['denominator'])
+        return fractions.Fraction(numerator.number, denominator.number)
 
 
 class ClNumberPrinter:
