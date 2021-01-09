@@ -74,9 +74,11 @@ class ClNumber(object):
 
     IMMEDIATE_MASK = 0b111
     VALUE_SHIFT = 3
+    DIGIT_BITS = 64
 
     def __init__(self, val):
         self.val = val
+        self.cl_class_bignum = gdb.parse_and_eval('::cln::cl_class_bignum')
 
     @property
     def word(self):
@@ -103,6 +105,36 @@ class ClNumber(object):
         if self.is_immediate:
             return ctypes.c_long(self.word).value >> self.VALUE_SHIFT
 
+    @property
+    def is_bignum(self):
+        heappointer = self.val['heappointer']
+        heappointer = heappointer.cast(heappointer.dynamic_type)
+        return heappointer.dereference()['type'] == self.cl_class_bignum.address
+
+    @property
+    def number(self):
+        if self.is_immediate:
+            return ctypes.c_long(self.word).value >> self.VALUE_SHIFT
+        elif self.is_bignum:
+            return self.decode_bignum()
+
+    def decode_bignum(self):
+        heappointer = self.val['heappointer']
+        heappointer = heappointer.cast(heappointer.dynamic_type)
+        heap_bignum_type = gdb.lookup_type('::cln::cl_heap_bignum')
+        heap_bignum_pointer = heappointer.cast(heap_bignum_type.pointer())
+        heap_bignum = heap_bignum_pointer.dereference()
+        length = heap_bignum['length']
+        unsigned_long_type = gdb.lookup_type('unsigned long')
+        data_ptr = heap_bignum['data'].cast(unsigned_long_type.pointer())
+        value = 0
+        i = 0
+        while i < length:
+            value += int(data_ptr.dereference()) * 2**(i*self.DIGIT_BITS)
+            data_ptr = data_ptr + 1
+            i += 1
+        return value
+
 
 class ClNumberPrinter:
 
@@ -110,11 +142,7 @@ class ClNumberPrinter:
         self.val = ClNumber(val)
 
     def to_string(self):
-        fn = self.val.fixnum
-        if fn is not None:
-            return str(fn)
-        else:
-            return str(self.val.pointer)
+        return str(self.val.number)
 
     def display_hint(self):
         return 'number'
