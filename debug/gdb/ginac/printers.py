@@ -37,6 +37,13 @@ def ex_to_number(wrapped_val):
         return val['value']
 
 
+def as_a(ex, typename):
+    val = unwrap_ex(ex)
+    type_tag = val.type.unqualified().tag
+    if type_tag == 'GiNaC::{}'.format(typename):
+        return val
+
+
 def find_type(orig, name):
     """Starting with orig, search for the member type NAME"""
     typ = orig.strip_typedefs()
@@ -126,6 +133,16 @@ class ClNumber(object):
     def is_complex(self):
         ptr = self.val['heappointer']
         return ptr.dereference()['type'] == self.cl_class_complex.address
+
+    # XXX: python complex are always floating-point
+    @property
+    def pynumber(self):
+        if self.is_immediate:
+            return self._decode_fixnum()
+        elif self.is_bignum:
+            return self.decode_bignum()
+        elif self.is_ratio:
+            return self.decode_ratio()
 
     @property
     def number(self):
@@ -224,14 +241,45 @@ class ModIntegerPrinter:
         return '{0} mod {1}'.format(str(value), str(modulus))
 
 
+def print_power(basis, exponent):
+    fmt = '({basis})^({exponent})'
+    basis_need_parens = True
+    exponent_need_parens = True
+    numeric_exponent = ex_to_number(exponent)
+    if numeric_exponent:
+        as_cl_N = ClNumber(numeric_exponent)
+        as_fixnum = as_cl_N.fixnum
+        if as_fixnum:
+            exponent = as_fixnum
+            if as_fixnum > 0:
+                exponent_need_parens = False
+    symbol_basis = as_a(basis, 'symbol')
+    if symbol_basis:
+        basis_need_parens = False
+        basis = symbol_basis
+    if basis_need_parens:
+        fmt ='({basis})'
+    else:
+        fmt = '{basis}'
+    if exponent == 1:
+        return fmt.format(basis=str(basis))
+    fmt = fmt + '^'
+    if exponent_need_parens:
+        fmt = fmt + '({exponent})'
+    else:
+        fmt = fmt + '{exponent}'
+    return fmt.format(basis=str(basis), exponent=str(exponent))
+
+
 class PowerPrinter:
 
     def __init__(self, val):
         self.val = val
 
     def to_string(self):
-        return '(%s)^(%s)' % (str(self.val['basis']),
-                              str(self.val['exponent']))
+        basis = self.val['basis']
+        exponent = self.val['exponent']
+        return print_power(basis, exponent)
 
     def display_hint(self):
         return 'power'
@@ -254,18 +302,31 @@ class StdVectorIterator(Iterator):
         return elt
 
 
-def print_term(e):
+def print_term(e, n = 0, leading_plus=True):
     term = e['rest']
     coeff = ex_to_number(e['coeff'])
-    if ClNumber(coeff).fixnum == 1:
-        return str(term)
+    coeff_pynum = ClNumber(coeff).pynumber
+    
+    if coeff_pynum == 1:
+        if n == 0 and not leading_plus:
+            return str(term)
+        else:
+            return '+' + str(term)
+    elif coeff_pynum == -1:
+        return '-' + str(term)
+    elif coeff_pynum > 0:
+        if n == 0 and not leading_plus:
+            fmt = '{0}*{1}'
+        else:
+            fmt = '+{0}*{1}'
     else:
-        return '{0}*{1}'.format(ClNumberPrinter(coeff).to_string(), str(term))
+        fmt = '{0}*{1}'
+    return fmt.format(ClNumberPrinter(coeff).to_string(), str(term))
 
 
-def print_sum(seq):
-    return ' + '.join([print_term(elt) for elt in StdVectorIterator(seq)])
-
+def print_sum(seq, leading_plus=False):
+    return ''.join(print_term(elt, n, leading_plus=leading_plus)
+                   for n, elt in enumerate(StdVectorIterator(seq)))
 
 class SumPrinter:
 
@@ -281,7 +342,7 @@ class SumPrinter:
         if self.should_skip_overall_coeff(overall_coeff):
             return print_sum(seq)
         else:
-            return str(overall_coeff) + ' + ' + print_sum(seq)
+            return str(overall_coeff) + print_sum(seq, leading_plus=True)
 
     def display_hint(self):
         return 'sum'
@@ -294,23 +355,19 @@ class ProdPrinter:
         self.overall_coeff = ex_to_number(val['overall_coeff'])
 
     def should_skip_overall_coeff(self):
-        return ClNumber(self.overall_coeff).fixum == 1
+        return ClNumber(self.overall_coeff).fixnum == 1
 
     def print_term(self, term):
         base = term['rest']
-        exponent = ex_to_number(term['coeff'])
-        if ClNumber(exponent).fixnum == 1:
-            return '({0})'.format(str(base))
-        else:
-            str_exponent = ClNumberPrinter(exponent).to_string()
-            return '({0})^({1})'.format(str(base), str_exponent)
+        exponent = term['coeff']
+        return print_power(base, exponent)
 
     def print_seq(self):
         return ' * '.join([self.print_term(term) for term in
                            StdVectorIterator(self.seq)])
 
     def to_string(self):
-        if self.should_skip_overall_coeff:
+        if self.should_skip_overall_coeff():
             return self.print_seq()
         else:
             coeff = ClNumberPrinter(self.overall_coeff).to_string()
