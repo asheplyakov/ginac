@@ -357,21 +357,29 @@ class ProdPrinter:
     def should_skip_overall_coeff(self):
         return ClNumber(self.overall_coeff).fixnum == 1
 
+    def print_overall_coeff(self):
+        oc_as_pynum = ClNumber(self.overall_coeff).pynumber
+        if oc_as_pynum:
+            if oc_as_pynum == 1:
+                return ''
+            elif oc_as_pynum == -1:
+                return '-'
+            else:
+                return str(oc_as_pynum) + '*'
+        else:
+            return str(self.overall_coeff) + '*'
+
     def print_term(self, term):
         base = term['rest']
         exponent = term['coeff']
         return print_power(base, exponent)
 
     def print_seq(self):
-        return ' * '.join([self.print_term(term) for term in
-                           StdVectorIterator(self.seq)])
+        return '*'.join([self.print_term(term) for term in
+                         StdVectorIterator(self.seq)])
 
     def to_string(self):
-        if self.should_skip_overall_coeff():
-            return self.print_seq()
-        else:
-            coeff = ClNumberPrinter(self.overall_coeff).to_string()
-            return '{0}*({1})'.format(coeff, self.print_seq())
+        return self.print_overall_coeff() + self.print_seq()
 
 
 class SymbolPrinter:
