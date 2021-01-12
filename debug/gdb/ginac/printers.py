@@ -302,11 +302,11 @@ class StdVectorIterator(Iterator):
         return elt
 
 
-def print_term(e, n = 0, leading_plus=True):
-    term = e['rest']
-    coeff = ex_to_number(e['coeff'])
+
+def print_term2(term, coeff, n=0, leading_plus=True):
+    coeff = ex_to_number(coeff)
     coeff_pynum = ClNumber(coeff).pynumber
-    
+
     if coeff_pynum == 1:
         if n == 0 and not leading_plus:
             return str(term)
@@ -324,35 +324,137 @@ def print_term(e, n = 0, leading_plus=True):
     return fmt.format(ClNumberPrinter(coeff).to_string(), str(term))
 
 
+def print_term(e, n = 0, leading_plus=True):
+    term = e['rest']
+    coeff = e['coeff']
+    return print_term2(term, coeff, n=n, leading_plus=leading_plus)
+
+
 def print_sum(seq, leading_plus=False):
     return ''.join(print_term(elt, n, leading_plus=leading_plus)
                    for n, elt in enumerate(StdVectorIterator(seq)))
 
+class _expairseq_iterator:
+    def __init__(self, seq):
+        self.item = seq['_M_impl']['_M_start']
+        self.finish = seq['_M_impl']['_M_finish']
+        self.count = 0
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+            if self.item == self.finish:
+                raise StopIteration
+            count = self.count
+            self.count = count + 1
+            term = self.item.dereference()
+            self.item = self.item + 1
+            return self.format(count, term['rest'], term['coeff'])
+
+
+class _empty_iterator:
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        raise StopIteration
+
+
+def vector_size(seq):
+        start = seq['_M_impl']['_M_start']
+        finish = seq['_M_impl']['_M_finish']
+        return int(finish - start)
+
+
 class SumPrinter:
+
+    MAX_NOPS_INLINE = 10
+
+    class _iterator(_expairseq_iterator):
+        def __init__(self, seq):
+            super().__init__(seq)
+
+        def format(self, n, rest, coeff):
+            return ('[%d]' % n, print_term2(rest, coeff, n))
 
     def __init__(self, val):
         self.val = val
+        self.seq = val['seq']
 
-    def should_skip_overall_coeff(self, oc):
-        return ClNumber(oc['value']).is_zero
+    @property
+    def overall_coeff(self):
+        oc = ex_to_number(self.val['overall_coeff'])
+        oc = ClNumber(oc)
+        if oc.pynumber is not None:
+            oc = oc.pynumber
+        elif oc.number is not None:
+            oc = oc.number
+        return oc
+
+    def _children(self):
+        return self._iterator(self.seq)
+
+    def children(self):
+        if self.nops > self.MAX_NOPS_INLINE:
+            return self._children()
+        else:
+            return _empty_iterator()
+
+    def print_overall_coeff(self):
+        return '' if self.overall_coeff == 0 else str(self.overall_coeff)
+
+    @property
+    def nops(self):
+        nops = vector_size(self.seq)
+        if self.overall_coeff != 0:
+            nops += 1
+        return nops
+
+    def _to_string_small(self):
+        return self.print_overall_coeff() \
+            + ''.join(str(term) for _, term in self._children())
 
     def to_string(self):
-        seq = self.val['seq']
-        overall_coeff = unwrap_ex(self.val['overall_coeff'])
-        if self.should_skip_overall_coeff(overall_coeff):
-            return print_sum(seq)
+        if self.nops <= self.MAX_NOPS_INLINE:
+            return self._to_string_small()
         else:
-            return str(overall_coeff) + print_sum(seq, leading_plus=True)
+            return self.print_overall_coeff()
 
     def display_hint(self):
-        return 'sum'
+        return 'sum of %d terms' % self.nops
 
 
 class ProdPrinter:
 
+    class _iterator:
+        def __init__(self, start, finish):
+            self.item = start
+            self.finish = finish
+            self.count = 0
+
+        def __iter__(self):
+            return self
+
+        def __next__(self):
+            if self.item == self.finish:
+                raise StopIteration
+            count = self.count
+            self.count = count + 1
+            term = self.item.dereference()
+            self.item = self.item + 1
+            basis = term['rest']
+            exponent = term['coeff']
+            pretty_term = print_power(basis, exponent)
+            return ('[%d]' % count, pretty_term)
+
     def __init__(self, val):
         self.seq = val['seq']
         self.overall_coeff = ex_to_number(val['overall_coeff'])
+
+    def children(self):
+        return self._iterator(self.seq['_M_impl']['_M_start'],
+                              self.seq['_M_impl']['_M_finish'])
 
     def should_skip_overall_coeff(self):
         return ClNumber(self.overall_coeff).fixnum == 1
@@ -379,7 +481,13 @@ class ProdPrinter:
                          StdVectorIterator(self.seq)])
 
     def to_string(self):
-        return self.print_overall_coeff() + self.print_seq()
+        start = self.seq['_M_impl']['_M_start']
+        finish = self.seq['_M_impl']['_M_finish']
+        count = int (finish - start)
+        return self.print_overall_coeff() + ' {} terms'.format(count)
+
+    def display_hint(self):
+        return 'product'
 
 
 class SymbolPrinter:
