@@ -285,24 +285,6 @@ class PowerPrinter:
         return 'power'
 
 
-class StdVectorIterator(Iterator):
-
-    def __init__(self, val):
-        self.item = val['_M_impl']['_M_start']
-        self.finish = val['_M_impl']['_M_finish']
-
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        if self.item == self.finish:
-            raise StopIteration
-        elt = self.item.dereference()
-        self.item = self.item + 1
-        return elt
-
-
-
 def print_term2(term, coeff, n=0, leading_plus=True):
     coeff = ex_to_number(coeff)
     coeff_pynum = ClNumber(coeff).pynumber
@@ -323,16 +305,6 @@ def print_term2(term, coeff, n=0, leading_plus=True):
         fmt = '{0}*{1}'
     return fmt.format(ClNumberPrinter(coeff).to_string(), str(term))
 
-
-def print_term(e, n = 0, leading_plus=True):
-    term = e['rest']
-    coeff = e['coeff']
-    return print_term2(term, coeff, n=n, leading_plus=leading_plus)
-
-
-def print_sum(seq, leading_plus=False):
-    return ''.join(print_term(elt, n, leading_plus=leading_plus)
-                   for n, elt in enumerate(StdVectorIterator(seq)))
 
 class _expairseq_iterator:
     def __init__(self, seq):
@@ -470,15 +442,6 @@ class ProdPrinter:
                 return str(oc_as_pynum) + '*'
         else:
             return str(self.overall_coeff) + '*'
-
-    def print_term(self, term):
-        base = term['rest']
-        exponent = term['coeff']
-        return print_power(base, exponent)
-
-    def print_seq(self):
-        return '*'.join([self.print_term(term) for term in
-                         StdVectorIterator(self.seq)])
 
     def to_string(self):
         start = self.seq['_M_impl']['_M_start']
